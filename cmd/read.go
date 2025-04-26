@@ -74,7 +74,7 @@ func readData() error {
 
 	now := time.Now()
 	// Send some data
-	message := []byte("READ some stuff")
+	message := []byte("READ ")
 	_, err = conn.Write(message)
 	if err != nil {
 		return fmt.Errorf("failed to send data: %w", err)
@@ -82,13 +82,13 @@ func readData() error {
 
 	// Read response
 	buffer := make([]byte, 1024)
-	_, err = conn.Read(buffer)
+	n, err := conn.Read(buffer)
 	if err != nil {
 		return fmt.Errorf("failed to read response: %w", err)
 	}
 
 	elapsed := time.Since(now)
 	elapsedMs := float64(elapsed.Nanoseconds()) / 1_000_000.0
-	fmt.Printf("Received response in %v ms\n", elapsedMs)
+	fmt.Printf("Roundtrip in %vms\nResponse - %v\n", elapsedMs, string(buffer[:n]))
 	return nil
 }

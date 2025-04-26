@@ -4,10 +4,12 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/litetable/litetable-cli/internal/dir"
 	"github.com/litetable/litetable-cli/internal/litetable"
 	"github.com/spf13/cobra"
+	"io"
 	"os"
 	"path/filepath"
 	"time"
@@ -40,37 +42,63 @@ func readData() error {
 	if err != nil {
 		return fmt.Errorf("failed to dial server: %w", err)
 	}
-
-	defer func(conn *tls.Conn) {
-		closeErr := conn.Close()
-		if closeErr != nil {
-			fmt.Println("failed to close connection: %w", closeErr.Error())
-		}
-	}(conn)
+	defer conn.Close()
 
 	now := time.Now()
-	// Send some data
-	message := []byte("READ key=testKey:12345 family=main qualifier=time qualifier=status latest=1")
-	_, err = conn.Write(message)
-	if err != nil {
+
+	// Send the command
+	message := []byte("READ key=testKey:12345 family=main qualifier=status qualifier=time latest" +
+		"=10")
+	if _, err = conn.Write(message); err != nil {
 		return fmt.Errorf("failed to send data: %w", err)
 	}
 
-	// Read response
-	buffer := make([]byte, 1024)
-	n, err := conn.Read(buffer)
-	if err != nil {
-		return fmt.Errorf("failed to read response: %w", err)
+	// Read response using a more robust approach for large responses
+	var fullResponse []byte
+	buffer := make([]byte, 4096)
+
+	// Use a reasonable timeout for the entire read operation
+	timeout := time.Now().Add(10 * time.Second)
+	if err := conn.SetReadDeadline(timeout); err != nil {
+		return fmt.Errorf("failed to set read deadline: %w", err)
 	}
+
+	for {
+		n, err := conn.Read(buffer)
+		if n > 0 {
+			fullResponse = append(fullResponse, buffer[:n]...)
+
+			// Check if we have a complete JSON object
+			if len(fullResponse) > 0 && isValidJSON(fullResponse) {
+				break
+			}
+		}
+
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+			return fmt.Errorf("error reading response: %w", err)
+		}
+
+		// Extend deadline for each successful read
+		if err := conn.SetReadDeadline(time.Now().Add(2 * time.Second)); err != nil {
+			return fmt.Errorf("failed to extend read deadline: %w", err)
+		}
+	}
+
+	// Print raw response size for debugging
+	fmt.Printf("Received %d bytes\n", len(fullResponse))
 
 	var payload litetable.Row
-
-	if err := json.Unmarshal(buffer[:n], &payload); err != nil {
-		return fmt.Errorf("failed to unmarshal response: %w", err)
+	if err := json.Unmarshal(fullResponse, &payload); err != nil {
+		return fmt.Errorf("failed to unmarshal response: %w\nRaw: %s",
+			err, string(fullResponse))
 	}
+
 	elapsed := time.Since(now)
 	elapsedMs := float64(elapsed.Nanoseconds()) / 1_000_000.0
-	fmt.Printf("Roundtrip in %vms\n\n%v\n", elapsedMs, payload.PrettyPrint())
+	fmt.Printf("Roundtrip in %.2fms\n\n%s\n", elapsedMs, payload.PrettyPrint())
 	return nil
 }
 
@@ -108,4 +136,10 @@ func dial() (*tls.Conn, error) {
 	}
 
 	return conn, nil
+}
+
+// isValidJSON checks if the buffer contains a complete, valid JSON object
+func isValidJSON(data []byte) bool {
+	var js json.RawMessage
+	return json.Unmarshal(data, &js) == nil
 }

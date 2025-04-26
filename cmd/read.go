@@ -16,12 +16,17 @@ import (
 )
 
 var (
+	// Read command options
+	readKey       string
+	readFamily    string
+	readQualifier []string
+	readLatest    int
+
 	readCmd = &cobra.Command{
 		Use:   "read",
 		Short: "Read data from the Litetable server",
 		Long:  "Read allows you to retrieve data from the Litetable server",
 		Run: func(cmd *cobra.Command, args []string) {
-			// read data from a read query
 			if err := readData(); err != nil {
 				fmt.Printf("Error: %v\n", err)
 				return
@@ -31,12 +36,20 @@ var (
 )
 
 func init() {
-	// add read command to root command
+	// Add read command to root command
 	rootCmd.AddCommand(readCmd)
+
+	// Add flags for read operation
+	readCmd.Flags().StringVarP(&readKey, "key", "k", "", "Row key to read (required)")
+	readCmd.Flags().StringVarP(&readFamily, "family", "f", "", "Column family to read")
+	readCmd.Flags().StringArrayVarP(&readQualifier, "qualifier", "q", []string{}, "Qualifiers to read (can be specified multiple times)")
+	readCmd.Flags().IntVarP(&readLatest, "latest", "l", 0, "Number of latest versions to return")
+
+	// Mark required flags
+	_ = readCmd.MarkFlagRequired("key")
+	_ = readCmd.MarkFlagRequired("family")
 }
 
-// readData requires us to create a connection to the server before sending a protocol
-// message over TLS. Connections require a TLS certificate.
 func readData() error {
 	conn, err := dial()
 	if err != nil {
@@ -46,14 +59,27 @@ func readData() error {
 
 	now := time.Now()
 
-	// Send the command
-	message := []byte("READ key=testKey:12345 family=main latest" +
-		"=1")
-	if _, err = conn.Write(message); err != nil {
-		return fmt.Errorf("failed to send data: %w", err)
+	// Build the READ command
+	command := fmt.Sprintf("READ key=%s", readKey)
+
+	if readFamily != "" {
+		command += fmt.Sprintf(" family=%s", readFamily)
 	}
 
-	// Read response using a more robust approach for large responses
+	for _, q := range readQualifier {
+		command += fmt.Sprintf(" qualifier=%s", q)
+	}
+
+	if readLatest > 0 {
+		command += fmt.Sprintf(" latest=%d", readLatest)
+	}
+
+	// Send the command
+	if _, err = conn.Write([]byte(command)); err != nil {
+		return fmt.Errorf("failed to send read command: %w", err)
+	}
+
+	// Read response using the robust approach for large responses
 	var fullResponse []byte
 	buffer := make([]byte, 4096)
 

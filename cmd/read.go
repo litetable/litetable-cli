@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 var (
@@ -64,12 +65,16 @@ func readData() error {
 	if err != nil {
 		return fmt.Errorf("failed to connect to server: %w", err)
 	}
-	defer conn.Close()
+	defer func(conn *tls.Conn) {
+		closeErr := conn.Close()
+		if closeErr != nil {
+			fmt.Println("failed to close connection: %w", closeErr.Error())
+		}
+	}(conn)
 
-	fmt.Println("Connected to Litetable server")
-
+	now := time.Now()
 	// Send some data
-	message := []byte("Hello, Litetable Server!")
+	message := []byte("READ some stuff")
 	_, err = conn.Write(message)
 	if err != nil {
 		return fmt.Errorf("failed to send data: %w", err)
@@ -77,11 +82,13 @@ func readData() error {
 
 	// Read response
 	buffer := make([]byte, 1024)
-	n, err := conn.Read(buffer)
+	_, err = conn.Read(buffer)
 	if err != nil {
 		return fmt.Errorf("failed to read response: %w", err)
 	}
 
-	fmt.Printf("Received response: %s\n", buffer[:n])
+	elapsed := time.Since(now)
+	elapsedMs := float64(elapsed.Nanoseconds()) / 1_000_000.0
+	fmt.Printf("Received response in %v ms\n", elapsedMs)
 	return nil
 }

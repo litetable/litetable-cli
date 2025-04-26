@@ -47,8 +47,8 @@ func readData() error {
 	now := time.Now()
 
 	// Send the command
-	message := []byte("READ key=testKey:12345 family=main qualifier=status qualifier=time latest" +
-		"=10")
+	message := []byte("READ key=testKey:12345 family=main latest" +
+		"=1")
 	if _, err = conn.Write(message); err != nil {
 		return fmt.Errorf("failed to send data: %w", err)
 	}

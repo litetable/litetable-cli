@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
@@ -117,21 +116,11 @@ func deleteData() error {
 	fmt.Printf("Received %d bytes\n", len(fullResponse))
 
 	// Parse the response
-	var response map[string]interface{}
-	if err := json.Unmarshal(fullResponse, &response); err != nil {
-		return fmt.Errorf("failed to unmarshal response: %w\nRaw: %s",
-			err, string(fullResponse))
-	}
-
 	elapsed := time.Since(now)
 	elapsedMs := float64(elapsed.Nanoseconds()) / 1_000_000.0
 	fmt.Printf("Deletion completed in %.2fms\n", elapsedMs)
 
 	// Pretty print the response
-	fmt.Printf("Status: %v\n", response["status"])
-	if msg, ok := response["message"].(string); ok && msg != "" {
-		fmt.Printf("Message: %s\n", msg)
-	}
-
+	fmt.Printf("Result: %v\n", string(fullResponse))
 	return nil
 }

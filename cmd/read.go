@@ -3,8 +3,10 @@ package cmd
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/json"
 	"fmt"
 	"github.com/litetable/litetable-cli/internal/dir"
+	"github.com/litetable/litetable-cli/internal/litetable"
 	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
@@ -48,7 +50,7 @@ func readData() error {
 
 	now := time.Now()
 	// Send some data
-	message := []byte("READ some other query")
+	message := []byte("READ key=testKey:12345 family=main qualifier=time qualifier=status latest=1")
 	_, err = conn.Write(message)
 	if err != nil {
 		return fmt.Errorf("failed to send data: %w", err)
@@ -61,9 +63,14 @@ func readData() error {
 		return fmt.Errorf("failed to read response: %w", err)
 	}
 
+	var payload litetable.Row
+
+	if err := json.Unmarshal(buffer[:n], &payload); err != nil {
+		return fmt.Errorf("failed to unmarshal response: %w", err)
+	}
 	elapsed := time.Since(now)
 	elapsedMs := float64(elapsed.Nanoseconds()) / 1_000_000.0
-	fmt.Printf("Roundtrip in %vms\nResponse - %v\n", elapsedMs, string(buffer[:n]))
+	fmt.Printf("Roundtrip in %vms\n\n%v\n", elapsedMs, payload.PrettyPrint())
 	return nil
 }
 

@@ -34,37 +34,11 @@ func init() {
 // readData requires us to create a connection to the server before sending a protocol
 // message over TLS. Connections require a TLS certificate.
 func readData() error {
-	certDir, err := dir.GetLitetableDir()
+	conn, err := dial()
 	if err != nil {
-		return fmt.Errorf("failed to get Litetable directory: %w", err)
+		return fmt.Errorf("failed to dial server: %w", err)
 	}
 
-	// Path to the certificate file
-	certFile := filepath.Join(certDir, serverCertName)
-
-	// Load the server's certificate to trust it
-	certData, err := os.ReadFile(certFile)
-	if err != nil {
-		return fmt.Errorf("failed to read certificate: %w", err)
-	}
-
-	// Create a certificate pool and add the server certificate
-	certPool := x509.NewCertPool()
-	if ok := certPool.AppendCertsFromPEM(certData); !ok {
-		return fmt.Errorf("failed to append certificate to pool")
-	}
-
-	// Create a TLS configuration that trusts the server certificate
-	tlsConfig := &tls.Config{
-		RootCAs:    certPool,
-		ServerName: "localhost",
-	}
-
-	// Connect to the server using TLS
-	conn, err := tls.Dial("tcp", ":9443", tlsConfig)
-	if err != nil {
-		return fmt.Errorf("failed to connect to server: %w", err)
-	}
 	defer func(conn *tls.Conn) {
 		closeErr := conn.Close()
 		if closeErr != nil {
@@ -74,7 +48,7 @@ func readData() error {
 
 	now := time.Now()
 	// Send some data
-	message := []byte("READ ")
+	message := []byte("READ some other query")
 	_, err = conn.Write(message)
 	if err != nil {
 		return fmt.Errorf("failed to send data: %w", err)
@@ -91,4 +65,40 @@ func readData() error {
 	elapsedMs := float64(elapsed.Nanoseconds()) / 1_000_000.0
 	fmt.Printf("Roundtrip in %vms\nResponse - %v\n", elapsedMs, string(buffer[:n]))
 	return nil
+}
+
+func dial() (*tls.Conn, error) {
+	certDir, err := dir.GetLitetableDir()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get Litetable directory: %w", err)
+	}
+
+	// Path to the certificate file
+	certFile := filepath.Join(certDir, serverCertName)
+
+	// Load the server's certificate to trust it
+	certData, err := os.ReadFile(certFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read certificate: %w", err)
+	}
+
+	// Create a certificate pool and add the server certificate
+	certPool := x509.NewCertPool()
+	if ok := certPool.AppendCertsFromPEM(certData); !ok {
+		return nil, fmt.Errorf("failed to append certificate to pool")
+	}
+
+	// Create a TLS configuration that trusts the server certificate
+	tlsConfig := &tls.Config{
+		RootCAs:    certPool,
+		ServerName: "localhost",
+	}
+
+	// Connect to the server using TLS
+	conn, err := tls.Dial("tcp", ":9443", tlsConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to server: %w", err)
+	}
+
+	return conn, nil
 }

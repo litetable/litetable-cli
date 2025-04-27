@@ -6,6 +6,7 @@ import (
 	"github.com/litetable/litetable-cli/internal/litetable"
 	"github.com/spf13/cobra"
 	"net"
+	"net/url"
 	"time"
 )
 
@@ -53,7 +54,7 @@ func init() {
 	writeCmd.Flags().StringArrayVarP(&writeQuals, "qualifier", "q", []string{},
 		"Qualifiers to read (can be specified multiple times)")
 	writeCmd.Flags().StringArrayVarP(&writeValues, "value", "v", []string{},
-		"Value to write (can be specified multiple times)")
+		"Values to write (can be specified multiple times, use quotes for values with spaces)")
 
 	rootCmd.AddCommand(writeCmd)
 }
@@ -74,7 +75,9 @@ func writeData() error {
 	// Create the WRITE command with all the qualifier/value pairs
 	cmd := fmt.Sprintf("WRITE key=%s family=%s", writeKey, writeFamily)
 	for i := 0; i < len(writeQuals); i++ {
-		cmd += fmt.Sprintf(" qualifier=%s value=%s", writeQuals[i], writeValues[i])
+		// URL encode the value to properly handle spaces and special characters
+		encodedValue := url.QueryEscape(writeValues[i])
+		cmd += fmt.Sprintf(" qualifier=%s value=%s", writeQuals[i], encodedValue)
 	}
 
 	now := time.Now()

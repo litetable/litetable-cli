@@ -1,23 +1,21 @@
 package cmd
 
 import (
-	"crypto/x509"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/litetable/litetable-cli/internal/dir"
 	"github.com/litetable/litetable-cli/internal/litetable"
 	"github.com/spf13/cobra"
 	"io"
-	"net"
-	"os"
-	"path/filepath"
+	"regexp"
 	"time"
 )
 
 var (
 	// Read command options
 	readKey       string
+	readKeyPrefix string
+	readRegex     string
 	readFamily    string
 	readQualifier []string
 	readLatest    int
@@ -26,6 +24,24 @@ var (
 		Use:   "read",
 		Short: "Read data from the Litetable server",
 		Long:  "Read allows you to retrieve data from the Litetable server",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			// Count how many key selectors are provided
+			selectors := 0
+			if readKey != "" {
+				selectors++
+			}
+			if readKeyPrefix != "" {
+				selectors++
+			}
+			if readRegex != "" {
+				selectors++
+			}
+
+			if selectors != 1 {
+				return fmt.Errorf("exactly one of --key (-k), --keyPrefix (-p), or --regex (-r) must be provided")
+			}
+			return nil
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := readData(); err != nil {
 				fmt.Printf("Error: %v\n", err)
@@ -40,13 +56,16 @@ func init() {
 	rootCmd.AddCommand(readCmd)
 
 	// Add flags for read operation
-	readCmd.Flags().StringVarP(&readKey, "key", "k", "", "Row key to read (required)")
+	readCmd.Flags().StringVarP(&readKey, "key", "k", "", "Row key to read")
+	readCmd.Flags().StringVarP(&readKeyPrefix, "keyPrefix", "p", "",
+		"Read all row-keys with this prefix")
+	readCmd.Flags().StringVarP(&readRegex, "regex", "r", "",
+		"Read all row-keys matching this regex pattern")
 	readCmd.Flags().StringVarP(&readFamily, "family", "f", "", "Column family to read")
 	readCmd.Flags().StringArrayVarP(&readQualifier, "qualifier", "q", []string{}, "Qualifiers to read (can be specified multiple times)")
 	readCmd.Flags().IntVarP(&readLatest, "latest", "l", 0, "Number of latest versions to return")
 
-	// Mark required flags
-	_ = readCmd.MarkFlagRequired("key")
+	// Mark required flags - removing the required mark for key
 	_ = readCmd.MarkFlagRequired("family")
 }
 
@@ -59,8 +78,24 @@ func readData() error {
 
 	now := time.Now()
 
-	// Build the READ command
-	command := fmt.Sprintf("READ key=%s", readKey)
+	// Track which mode we're using to determine how to parse the response
+	isMultiRowQuery := false
+
+	// Build the READ command based on which selector is provided
+	var command string
+	if readKey != "" {
+		command = fmt.Sprintf("READ key=%s", readKey)
+	} else if readKeyPrefix != "" {
+		command = fmt.Sprintf("READ prefix=%s", readKeyPrefix)
+		isMultiRowQuery = true
+	} else if readRegex != "" {
+		// Create a properly formatted regex pattern that escapes special characters
+		// and wraps the user input with ".*" for substring matching
+		escapedRegex := regexp.QuoteMeta(readRegex)
+		formattedRegex := fmt.Sprintf("*.%s.*", escapedRegex)
+		command = fmt.Sprintf("READ regex=%s", formattedRegex)
+		isMultiRowQuery = true
+	}
 
 	if readFamily != "" {
 		command += fmt.Sprintf(" family=%s", readFamily)
@@ -116,56 +151,40 @@ func readData() error {
 	// Print raw response size for debugging
 	fmt.Printf("Received %d bytes\n", len(fullResponse))
 
-	var payload litetable.Row
-	if err := json.Unmarshal(fullResponse, &payload); err != nil {
-		return fmt.Errorf("failed to unmarshal response: %w\nRaw: %s",
-			err, string(fullResponse))
-	}
-
 	elapsed := time.Since(now)
 	elapsedMs := float64(elapsed.Nanoseconds()) / 1_000_000.0
-	fmt.Printf("Roundtrip in %.2fms\n\n%s\n", elapsedMs, payload.PrettyPrint())
+
+	// Parse the response based on which query mode we're using
+	if isMultiRowQuery {
+		// Parse as an array of rows
+		var rows map[string]litetable.Row
+		if err := json.Unmarshal(fullResponse, &rows); err != nil {
+			return fmt.Errorf("failed to unmarshal row map response: %w\nRaw: %s",
+				err, string(fullResponse))
+		}
+
+		fmt.Printf("Found %d matching rows\n", len(rows))
+
+		// Print each row with a separator
+		first := true
+		for key, row := range rows {
+			if !first {
+				fmt.Println("--------------------")
+			}
+			first = false
+			fmt.Printf("Key: %s\n%s\n", key, row.PrettyPrint())
+		}
+	} else {
+		// Parse as a single row
+		var row litetable.Row
+		if err := json.Unmarshal(fullResponse, &row); err != nil {
+			return fmt.Errorf("failed to unmarshal single row response: %w\nRaw: %s",
+				err, string(fullResponse))
+		}
+
+		fmt.Printf("%s\n", row.PrettyPrint())
+	}
+	fmt.Printf("Roundtrip in %.2fms\n", elapsedMs)
+
 	return nil
-}
-
-func dial() (net.Conn, error) {
-	certDir, err := dir.GetLitetableDir()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get Litetable directory: %w", err)
-	}
-
-	// Path to the certificate file
-	certFile := filepath.Join(certDir, serverCertName)
-
-	// Load the server's certificate to trust it
-	certData, err := os.ReadFile(certFile)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read certificate: %w", err)
-	}
-
-	// Create a certificate pool and add the server certificate
-	certPool := x509.NewCertPool()
-	if ok := certPool.AppendCertsFromPEM(certData); !ok {
-		return nil, fmt.Errorf("failed to append certificate to pool")
-	}
-
-	// Create a TLS configuration that trusts the server certificate
-	// tlsConfig := &tls.Config{
-	// 	RootCAs:            certPool,
-	// 	ServerName:         "localhost",
-	// }
-
-	// Connect to the server using TLS
-	conn, err := net.Dial("tcp", ":9443")
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to server: %w", err)
-	}
-
-	return conn, nil
-}
-
-// isValidJSON checks if the buffer contains a complete, valid JSON object
-func isValidJSON(data []byte) bool {
-	var js json.RawMessage
-	return json.Unmarshal(data, &js) == nil
 }

@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/litetable/litetable-cli/internal/litetable"
 	"github.com/spf13/cobra"
 	"net"
 	"time"
@@ -89,8 +91,15 @@ func writeData() error {
 		return fmt.Errorf("failed to read response: %w", err)
 	}
 
+	var payload litetable.Row
+	if err := json.Unmarshal(buffer[:n], &payload); err != nil {
+		return fmt.Errorf("failed to unmarshal response: %w\nRaw: %s",
+			err, string(buffer[:n]))
+	}
+
 	elapsed := time.Since(now)
 	elapsedMs := float64(elapsed.Nanoseconds()) / 1_000_000.0
-	fmt.Printf("Roundtrip in %.2fms\nResponse - %s\n", elapsedMs, string(buffer[:n]))
+	fmt.Printf("Roundtrip in %.2fms\n\n%s\n", elapsedMs, payload.PrettyPrint())
 	return nil
+
 }

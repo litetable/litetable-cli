@@ -159,8 +159,7 @@ func readData() error {
 		// Parse as an array of rows
 		var rows map[string]litetable.Row
 		if err := json.Unmarshal(fullResponse, &rows); err != nil {
-			return fmt.Errorf("failed to unmarshal row map response: %w\nRaw: %s",
-				err, string(fullResponse))
+			return fmt.Errorf("%s", string(fullResponse))
 		}
 
 		fmt.Printf("Found %d matching rows\n", len(rows))

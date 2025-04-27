@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
 	"errors"
@@ -10,6 +9,7 @@ import (
 	"github.com/litetable/litetable-cli/internal/litetable"
 	"github.com/spf13/cobra"
 	"io"
+	"net"
 	"os"
 	"path/filepath"
 	"time"
@@ -128,7 +128,7 @@ func readData() error {
 	return nil
 }
 
-func dial() (*tls.Conn, error) {
+func dial() (net.Conn, error) {
 	certDir, err := dir.GetLitetableDir()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get Litetable directory: %w", err)
@@ -150,13 +150,13 @@ func dial() (*tls.Conn, error) {
 	}
 
 	// Create a TLS configuration that trusts the server certificate
-	tlsConfig := &tls.Config{
-		RootCAs:    certPool,
-		ServerName: "localhost",
-	}
+	// tlsConfig := &tls.Config{
+	// 	RootCAs:            certPool,
+	// 	ServerName:         "localhost",
+	// }
 
 	// Connect to the server using TLS
-	conn, err := tls.Dial("tcp", ":9443", tlsConfig)
+	conn, err := net.Dial("tcp", ":9443")
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to server: %w", err)
 	}

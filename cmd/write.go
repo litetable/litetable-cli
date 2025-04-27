@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"crypto/tls"
 	"fmt"
 	"github.com/spf13/cobra"
+	"net"
 	"time"
 )
 
@@ -62,7 +62,7 @@ func writeData() error {
 		return fmt.Errorf("failed to dial server: %w", err)
 	}
 
-	defer func(conn *tls.Conn) {
+	defer func(conn net.Conn) {
 		closeErr := conn.Close()
 		if closeErr != nil {
 			fmt.Println("failed to close connection: %w", closeErr.Error())

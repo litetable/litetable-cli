@@ -92,7 +92,7 @@ func readData() error {
 		// Create a properly formatted regex pattern that escapes special characters
 		// and wraps the user input with ".*" for substring matching
 		escapedRegex := regexp.QuoteMeta(readRegex)
-		formattedRegex := fmt.Sprintf("*.%s.*", escapedRegex)
+		formattedRegex := fmt.Sprintf(".*%s.*", escapedRegex)
 		command = fmt.Sprintf("READ regex=%s", formattedRegex)
 		isMultiRowQuery = true
 	}

@@ -45,10 +45,13 @@ var (
 )
 
 func init() {
-	writeCmd.Flags().StringVar(&writeKey, "key", "", "Row key for the write operation")
-	writeCmd.Flags().StringVar(&writeFamily, "family", "", "Column family for the write operation")
-	writeCmd.Flags().StringArrayVar(&writeQuals, "qualifier", []string{}, "Column qualifier (can be specified multiple times)")
-	writeCmd.Flags().StringArrayVar(&writeValues, "value", []string{}, "Value to write (can be specified multiple times)")
+	writeCmd.Flags().StringVarP(&writeKey, "key", "k", "", "Row key for the write operation")
+	writeCmd.Flags().StringVarP(&writeFamily, "family", "f", "",
+		"Column family for the write operation")
+	writeCmd.Flags().StringArrayVarP(&writeQuals, "qualifier", "q", []string{},
+		"Qualifiers to read (can be specified multiple times)")
+	writeCmd.Flags().StringArrayVarP(&writeValues, "value", "v", []string{},
+		"Value to write (can be specified multiple times)")
 
 	rootCmd.AddCommand(writeCmd)
 }

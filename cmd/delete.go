@@ -13,7 +13,6 @@ var (
 	deleteKey       string
 	deleteFamily    string
 	deleteQualifier []string
-	deleteMode      string
 	deleteTTL       int64
 
 	deleteCmd = &cobra.Command{
@@ -38,7 +37,6 @@ func init() {
 	deleteCmd.Flags().StringVarP(&deleteKey, "key", "k", "", "Row key to delete (required)")
 	deleteCmd.Flags().StringVarP(&deleteFamily, "family", "f", "", "Column family to delete")
 	deleteCmd.Flags().StringArrayVarP(&deleteQualifier, "qualifier", "q", []string{}, "Qualifiers to delete (can be specified multiple times)")
-	deleteCmd.Flags().StringVarP(&deleteMode, "mode", "m", "", "Deletion mode (immediate or tombstone)")
 	deleteCmd.Flags().Int64VarP(&deleteTTL, "ttl", "t", 0, "Time-to-live in seconds for tombstone entries")
 
 	// Mark required flags
@@ -63,10 +61,6 @@ func deleteData() error {
 
 	for _, q := range deleteQualifier {
 		command += fmt.Sprintf(" qualifier=%s", q)
-	}
-
-	if deleteMode != "" {
-		command += fmt.Sprintf(" mode=%s", deleteMode)
 	}
 
 	if deleteTTL > 0 {

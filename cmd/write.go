@@ -97,6 +97,7 @@ func writeData() error {
 			err, string(buffer[:n]))
 	}
 
+	fmt.Println(string(buffer[:n]))
 	elapsed := time.Since(now)
 	elapsedMs := float64(elapsed.Nanoseconds()) / 1_000_000.0
 	fmt.Printf("Roundtrip in %.2fms\n\n%s\n", elapsedMs, payload.PrettyPrint())

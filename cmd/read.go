@@ -177,8 +177,7 @@ func readData() error {
 		// Parse as a single row
 		var row litetable.Row
 		if err := json.Unmarshal(fullResponse, &row); err != nil {
-			return fmt.Errorf("failed to unmarshal single row response: %w\nRaw: %s",
-				err, string(fullResponse))
+			return fmt.Errorf("%s", string(fullResponse))
 		}
 
 		fmt.Printf("%s\n", row.PrettyPrint())

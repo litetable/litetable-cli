@@ -1,0 +1,362 @@
+[
+  {
+    "rowkey": "galaxy:1",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "Milky Way",
+      "type": "Barred Spiral",
+      "distance": "0",
+      "diameter": "105700 ly",
+      "constellation": "Sagittarius",
+      "mass": "1.5 trillion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:2",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "Andromeda",
+      "type": "Spiral",
+      "distance": "2.537 million ly",
+      "diameter": "220000 ly",
+      "constellation": "Andromeda",
+      "mass": "1.23 trillion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:3",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "Triangulum",
+      "type": "Spiral",
+      "distance": "2.73 million ly",
+      "diameter": "60000 ly",
+      "constellation": "Triangulum",
+      "mass": "50 billion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:4",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "Messier 87",
+      "type": "Elliptical",
+      "distance": "53.5 million ly",
+      "diameter": "240000 ly",
+      "constellation": "Virgo",
+      "mass": "2.4 trillion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:5",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "Whirlpool Galaxy",
+      "type": "Spiral",
+      "distance": "23 million ly",
+      "diameter": "76000 ly",
+      "constellation": "Canes Venatici",
+      "mass": "160 billion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:6",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "Sombrero Galaxy",
+      "type": "Spiral",
+      "distance": "29.3 million ly",
+      "diameter": "49000 ly",
+      "constellation": "Virgo",
+      "mass": "800 billion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:7",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "Large Magellanic Cloud",
+      "type": "Dwarf Irregular",
+      "distance": "163,000 ly",
+      "diameter": "14000 ly",
+      "constellation": "Dorado",
+      "mass": "10 billion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:8",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "Small Magellanic Cloud",
+      "type": "Dwarf Irregular",
+      "distance": "200,000 ly",
+      "diameter": "7000 ly",
+      "constellation": "Tucana",
+      "mass": "7 billion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:9",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 1300",
+      "type": "Barred Spiral",
+      "distance": "61 million ly",
+      "diameter": "110000 ly",
+      "constellation": "Eridanus",
+      "mass": "Unknown"
+    }
+  },
+  {
+    "rowkey": "galaxy:10",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "Centaurus A",
+      "type": "Lenticular",
+      "distance": "12 million ly",
+      "diameter": "60000 ly",
+      "constellation": "Centaurus",
+      "mass": "1 trillion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:11",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 6744",
+      "type": "Spiral",
+      "distance": "30 million ly",
+      "diameter": "175000 ly",
+      "constellation": "Pavo",
+      "mass": "240 billion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:12",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 6946",
+      "type": "Intermediate Spiral",
+      "distance": "25.2 million ly",
+      "diameter": "40000 ly",
+      "constellation": "Cepheus",
+      "mass": "Unknown"
+    }
+  },
+  {
+    "rowkey": "galaxy:13",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 4414",
+      "type": "Flocculent Spiral",
+      "distance": "62 million ly",
+      "diameter": "56000 ly",
+      "constellation": "Coma Berenices",
+      "mass": "Unknown"
+    }
+  },
+  {
+    "rowkey": "galaxy:14",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 1566",
+      "type": "Spiral",
+      "distance": "40 million ly",
+      "diameter": "100000 ly",
+      "constellation": "Dorado",
+      "mass": "Unknown"
+    }
+  },
+  {
+    "rowkey": "galaxy:15",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "IC 1101",
+      "type": "Elliptical",
+      "distance": "1.04 billion ly",
+      "diameter": "400000–500000 ly",
+      "constellation": "Serpens",
+      "mass": "100 trillion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:16",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 5128",
+      "type": "Lenticular",
+      "distance": "11 million ly",
+      "diameter": "60000 ly",
+      "constellation": "Centaurus",
+      "mass": "1 trillion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:17",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 1097",
+      "type": "Barred Spiral",
+      "distance": "45 million ly",
+      "diameter": "140000 ly",
+      "constellation": "Fornax",
+      "mass": "Unknown"
+    }
+  },
+  {
+    "rowkey": "galaxy:18",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 4038",
+      "type": "Interacting",
+      "distance": "45 million ly",
+      "diameter": "50000 ly",
+      "constellation": "Corvus",
+      "mass": "Unknown"
+    }
+  },
+  {
+    "rowkey": "galaxy:19",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 4039",
+      "type": "Interacting",
+      "distance": "45 million ly",
+      "diameter": "50000 ly",
+      "constellation": "Corvus",
+      "mass": "Unknown"
+    }
+  },
+  {
+    "rowkey": "galaxy:20",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 3314",
+      "type": "Overlapping Spiral Pair",
+      "distance": "117 million ly",
+      "diameter": "Unknown",
+      "constellation": "Hydra",
+      "mass": "Unknown"
+    }
+  },
+  {
+    "rowkey": "galaxy:21",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "Messier 81",
+      "type": "Spiral",
+      "distance": "12 million ly",
+      "diameter": "90000 ly",
+      "constellation": "Ursa Major",
+      "mass": "250 billion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:22",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "Messier 82",
+      "type": "Starburst",
+      "distance": "12 million ly",
+      "diameter": "37000 ly",
+      "constellation": "Ursa Major",
+      "mass": "100 billion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:23",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 4676",
+      "type": "Interacting",
+      "distance": "300 million ly",
+      "diameter": "Unknown",
+      "constellation": "Coma Berenices",
+      "mass": "Unknown"
+    }
+  },
+  {
+    "rowkey": "galaxy:24",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 4258",
+      "type": "Spiral",
+      "distance": "23 million ly",
+      "diameter": "130000 ly",
+      "constellation": "Canes Venatici",
+      "mass": "700 billion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:25",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 2787",
+      "type": "Lenticular",
+      "distance": "24 million ly",
+      "diameter": "36000 ly",
+      "constellation": "Ursa Major",
+      "mass": "Unknown"
+    }
+  },
+  {
+    "rowkey": "galaxy:26",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 300",
+      "type": "Spiral",
+      "distance": "6 million ly",
+      "diameter": "94000 ly",
+      "constellation": "Sculptor",
+      "mass": "10 billion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:27",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 1427A",
+      "type": "Irregular",
+      "distance": "52 million ly",
+      "diameter": "30000 ly",
+      "constellation": "Fornax",
+      "mass": "Unknown"
+    }
+  },
+  {
+    "rowkey": "galaxy:28",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 5866",
+      "type": "Lenticular",
+      "distance": "44 million ly",
+      "diameter": "60000 ly",
+      "constellation": "Draco",
+      "mass": "Unknown"
+    }
+  },
+  {
+    "rowkey": "galaxy:29",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 7331",
+      "type": "Unbarred Spiral",
+      "distance": "40 million ly",
+      "diameter": "120000 ly",
+      "constellation": "Pegasus",
+      "mass": "500 billion M☉"
+    }
+  },
+  {
+    "rowkey": "galaxy:30",
+    "family": "galaxies",
+    "qualifiers": {
+      "name": "NGC 1316",
+      "type": "Lenticular",
+      "distance": "60 million ly",
+      "diameter": "250000 ly",
+      "constellation": "Fornax",
+      "mass": "500 billion M☉"
+    }
+  }
+]

@@ -1,0 +1,332 @@
+[
+  {
+    "rowkey": "car:1",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Ford",
+      "model": "Model T",
+      "yearsMade": "1908–1927",
+      "type": "Economy",
+      "notes": "First mass-produced car"
+    }
+  },
+  {
+    "rowkey": "car:2",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Volkswagen",
+      "model": "Beetle",
+      "yearsMade": "1938–2003",
+      "type": "Compact",
+      "notes": "One of the most-produced cars ever"
+    }
+  },
+  {
+    "rowkey": "car:3",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Chevrolet",
+      "model": "Bel Air",
+      "yearsMade": "1950–1975",
+      "type": "Full-size",
+      "notes": "Iconic 1950s American car"
+    }
+  },
+  {
+    "rowkey": "car:4",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Ford",
+      "model": "Mustang",
+      "yearsMade": "1964–present",
+      "type": "Muscle",
+      "notes": "Started the pony car craze"
+    }
+  },
+  {
+    "rowkey": "car:5",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Chevrolet",
+      "model": "Corvette",
+      "yearsMade": "1953–present",
+      "type": "Sports",
+      "notes": "America’s first true sports car"
+    }
+  },
+  {
+    "rowkey": "car:6",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Ferrari",
+      "model": "F40",
+      "yearsMade": "1987–1992",
+      "type": "Supercar",
+      "notes": "Last car approved by Enzo Ferrari"
+    }
+  },
+  {
+    "rowkey": "car:7",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Lamborghini",
+      "model": "Countach",
+      "yearsMade": "1974–1990",
+      "type": "Supercar",
+      "notes": "Famous for its scissor doors"
+    }
+  },
+  {
+    "rowkey": "car:8",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Tesla",
+      "model": "Model S",
+      "yearsMade": "2012–present",
+      "type": "Electric Sedan",
+      "notes": "Popularized high-performance EVs"
+    }
+  },
+  {
+    "rowkey": "car:9",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Toyota",
+      "model": "Corolla",
+      "yearsMade": "1966–present",
+      "type": "Compact",
+      "notes": "Best-selling car model in the world"
+    }
+  },
+  {
+    "rowkey": "car:10",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Porsche",
+      "model": "911",
+      "yearsMade": "1964–present",
+      "type": "Sports",
+      "notes": "Famous rear-engine design"
+    }
+  },
+  {
+    "rowkey": "car:11",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Mini",
+      "model": "Cooper",
+      "yearsMade": "1959–2000 (original)",
+      "type": "Subcompact",
+      "notes": "Revolutionized small car design"
+    }
+  },
+  {
+    "rowkey": "car:12",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Bugatti",
+      "model": "Veyron",
+      "yearsMade": "2005–2015",
+      "type": "Hypercar",
+      "notes": "First production car to exceed 250 mph"
+    }
+  },
+  {
+    "rowkey": "car:13",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "BMW",
+      "model": "M3 E30",
+      "yearsMade": "1986–1991",
+      "type": "Sports Sedan",
+      "notes": "Cult classic for driving enthusiasts"
+    }
+  },
+  {
+    "rowkey": "car:14",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Honda",
+      "model": "Civic",
+      "yearsMade": "1972–present",
+      "type": "Compact",
+      "notes": "Popular, reliable daily driver"
+    }
+  },
+  {
+    "rowkey": "car:15",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Toyota",
+      "model": "Supra MKIV",
+      "yearsMade": "1993–2002",
+      "type": "Sports",
+      "notes": "Iconic from Fast & Furious"
+    }
+  },
+  {
+    "rowkey": "car:16",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Mazda",
+      "model": "RX-7",
+      "yearsMade": "1978–2002",
+      "type": "Sports",
+      "notes": "Famous rotary engine car"
+    }
+  },
+  {
+    "rowkey": "car:17",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "DeLorean",
+      "model": "DMC-12",
+      "yearsMade": "1981–1983",
+      "type": "Coupe",
+      "notes": "Back to the Future car"
+    }
+  },
+  {
+    "rowkey": "car:18",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Nissan",
+      "model": "GT-R R34",
+      "yearsMade": "1999–2002",
+      "type": "Sports",
+      "notes": "Godzilla of Japanese cars"
+    }
+  },
+  {
+    "rowkey": "car:19",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "McLaren",
+      "model": "F1",
+      "yearsMade": "1992–1998",
+      "type": "Supercar",
+      "notes": "Fastest naturally aspirated car"
+    }
+  },
+  {
+    "rowkey": "car:20",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Jeep",
+      "model": "Wrangler",
+      "yearsMade": "1986–present",
+      "type": "Off-road SUV",
+      "notes": "Descended from WWII Willys"
+    }
+  },
+  {
+    "rowkey": "car:21",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Land Rover",
+      "model": "Defender",
+      "yearsMade": "1983–2016, 2020–present",
+      "type": "Off-road",
+      "notes": "Famous for rugged terrain"
+    }
+  },
+  {
+    "rowkey": "car:22",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Cadillac",
+      "model": "Eldorado",
+      "yearsMade": "1953–2002",
+      "type": "Luxury Coupe",
+      "notes": "Symbol of American luxury"
+    }
+  },
+  {
+    "rowkey": "car:23",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Chevrolet",
+      "model": "Camaro",
+      "yearsMade": "1966–present",
+      "type": "Muscle",
+      "notes": "Rival to Ford Mustang"
+    }
+  },
+  {
+    "rowkey": "car:24",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Audi",
+      "model": "Quattro",
+      "yearsMade": "1980–1991",
+      "type": "Rally",
+      "notes": "Popularized AWD in rally racing"
+    }
+  },
+  {
+    "rowkey": "car:25",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Mercedes-Benz",
+      "model": "300SL Gullwing",
+      "yearsMade": "1954–1957",
+      "type": "Sports",
+      "notes": "First production car with fuel injection"
+    }
+  },
+  {
+    "rowkey": "car:26",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Subaru",
+      "model": "Impreza WRX STI",
+      "yearsMade": "1994–2021",
+      "type": "Rally",
+      "notes": "Rally-bred street car"
+    }
+  },
+  {
+    "rowkey": "car:27",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Dodge",
+      "model": "Charger",
+      "yearsMade": "1966–present",
+      "type": "Muscle",
+      "notes": "Driven by Dom in Fast & Furious"
+    }
+  },
+  {
+    "rowkey": "car:28",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Pontiac",
+      "model": "Firebird Trans Am",
+      "yearsMade": "1967–2002",
+      "type": "Muscle",
+      "notes": "Featured in Smokey and the Bandit"
+    }
+  },
+  {
+    "rowkey": "car:29",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Aston Martin",
+      "model": "DB5",
+      "yearsMade": "1963–1965",
+      "type": "Grand Tourer",
+      "notes": "James Bond’s iconic car"
+    }
+  },
+  {
+    "rowkey": "car:30",
+    "family": "cars",
+    "qualifiers": {
+      "brand": "Peugeot",
+      "model": "205 GTI",
+      "yearsMade": "1984–1994",
+      "type": "Hot Hatch",
+      "notes": "European performance icon"
+    }
+  }
+]

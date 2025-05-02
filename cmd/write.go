@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"net"
 	"net/url"
+	"strconv"
 	"time"
 )
 
@@ -15,12 +16,14 @@ var (
 	writeFamily string
 	writeQuals  []string
 	writeValues []string
+	writeTTL    int64
 
 	writeCmd = &cobra.Command{
-		Use:     "write",
-		Short:   "Write data to the Litetable server",
-		Long:    "Write allows you to send data to the Litetable server",
-		Example: "litetable write --key=rowKey --family=familyName --qualifier=qual1 --value=val1 --qualifier=qual2 --value=val2",
+		Use:   "write",
+		Short: "Write data to the Litetable server",
+		Long:  "Write allows you to send data to the Litetable server",
+		Example: "litetable write --key=rowKey --family=familyName --qualifier=qual1 --value=val1" +
+			" --qualifier=qual2 --value=val2 --ttl=60",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			// Validate inputs
 			if writeKey == "" {
@@ -35,6 +38,9 @@ var (
 			}
 			if len(writeQuals) == 0 {
 				return fmt.Errorf("at least one qualifier/value pair is required")
+			}
+			if writeTTL < 0 {
+				return fmt.Errorf("TTL must be a non-negative value")
 			}
 			return nil
 		},
@@ -55,6 +61,8 @@ func init() {
 		"Qualifiers to read (can be specified multiple times)")
 	writeCmd.Flags().StringArrayVarP(&writeValues, "value", "v", []string{},
 		"Values to write (can be specified multiple times, use quotes for values with spaces)")
+	writeCmd.Flags().Int64VarP(&writeTTL, "ttl", "t", 0,
+		"Time to live in seconds (0 means no expiration)")
 
 	rootCmd.AddCommand(writeCmd)
 }
@@ -78,6 +86,10 @@ func writeData() error {
 		// URL encode the value to properly handle spaces and special characters
 		encodedValue := url.QueryEscape(writeValues[i])
 		cmd += fmt.Sprintf(" qualifier=%s value=%s", writeQuals[i], encodedValue)
+	}
+
+	if writeTTL > 0 {
+		cmd += fmt.Sprintf(" ttl=%s", strconv.FormatInt(writeTTL, 10))
 	}
 
 	now := time.Now()

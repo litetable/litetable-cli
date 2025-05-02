@@ -7,7 +7,6 @@ import (
 	"github.com/litetable/litetable-cli/internal/litetable"
 	"github.com/spf13/cobra"
 	"io"
-	"regexp"
 	"time"
 )
 
@@ -91,8 +90,7 @@ func readData() error {
 	} else if readRegex != "" {
 		// Create a properly formatted regex pattern that escapes special characters
 		// and wraps the user input with ".*" for substring matching
-		escapedRegex := regexp.QuoteMeta(readRegex)
-		formattedRegex := fmt.Sprintf(".*%s.*", escapedRegex)
+		formattedRegex := fmt.Sprintf(".*%s.*", readRegex)
 		command = fmt.Sprintf("READ regex=%s", formattedRegex)
 		isMultiRowQuery = true
 	}
@@ -177,7 +175,8 @@ func readData() error {
 		// Parse as a single row
 		var row litetable.Row
 		if err := json.Unmarshal(fullResponse, &row); err != nil {
-			return fmt.Errorf("%s", string(fullResponse))
+			fmt.Printf("%s", string(fullResponse))
+			return nil
 		}
 
 		fmt.Printf("%s\n", row.PrettyPrint())

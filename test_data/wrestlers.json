@@ -1,0 +1,498 @@
+[
+  {
+    "rowkey": "champ:6",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Terry",
+      "lastName": "Bolea",
+      "nickname": "Hulk Hogan"
+    }
+  },
+  {
+    "rowkey": "champ:7",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Dwayne",
+      "lastName": "Johnson",
+      "nickname": "The Rock"
+    }
+  },
+  {
+    "rowkey": "champ:8",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Steve",
+      "lastName": "Austin",
+      "nickname": "Stone Cold"
+    }
+  },
+  {
+    "rowkey": "champ:9",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Mark",
+      "lastName": "Calaway",
+      "nickname": "The Undertaker"
+    }
+  },
+  {
+    "rowkey": "champ:10",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Paul",
+      "lastName": "Levesque",
+      "nickname": "Triple H"
+    }
+  },
+  {
+    "rowkey": "champ:11",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "John",
+      "lastName": "Cena",
+      "nickname": "The Champ"
+    }
+  },
+  {
+    "rowkey": "champ:12",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Randy",
+      "lastName": "Savage",
+      "nickname": "Macho Man"
+    }
+  },
+  {
+    "rowkey": "champ:13",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Ric",
+      "lastName": "Flair",
+      "nickname": "The Nature Boy"
+    }
+  },
+  {
+    "rowkey": "champ:14",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Bret",
+      "lastName": "Hart",
+      "nickname": "The Hitman"
+    }
+  },
+  {
+    "rowkey": "champ:15",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Shawn",
+      "lastName": "Michaels",
+      "nickname": "The Heartbreak Kid"
+    }
+  },
+  {
+    "rowkey": "champ:16",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Glenn",
+      "lastName": "Jacobs",
+      "nickname": "Kane"
+    }
+  },
+  {
+    "rowkey": "champ:17",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Mick",
+      "lastName": "Foley",
+      "nickname": "Mankind"
+    }
+  },
+  {
+    "rowkey": "champ:18",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Kevin",
+      "lastName": "Nash",
+      "nickname": "Diesel"
+    }
+  },
+  {
+    "rowkey": "champ:19",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Scott",
+      "lastName": "Hall",
+      "nickname": "Razor Ramon"
+    }
+  },
+  {
+    "rowkey": "champ:20",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Adam",
+      "lastName": "Copeland",
+      "nickname": "Edge"
+    }
+  },
+  {
+    "rowkey": "champ:21",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Jeffrey",
+      "lastName": "Hardy",
+      "nickname": "Jeff Hardy"
+    }
+  },
+  {
+    "rowkey": "champ:22",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Matt",
+      "lastName": "Hardy",
+      "nickname": "Matt Hardy"
+    }
+  },
+  {
+    "rowkey": "champ:23",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Phil",
+      "lastName": "Brooks",
+      "nickname": "CM Punk"
+    }
+  },
+  {
+    "rowkey": "champ:24",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Bryan",
+      "lastName": "Danielson",
+      "nickname": "Daniel Bryan"
+    }
+  },
+  {
+    "rowkey": "champ:25",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Colby",
+      "lastName": "Lopez",
+      "nickname": "Seth Rollins"
+    }
+  },
+  {
+    "rowkey": "champ:26",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Joe",
+      "lastName": "Anoaʻi",
+      "nickname": "Roman Reigns"
+    }
+  },
+  {
+    "rowkey": "champ:27",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Windham",
+      "lastName": "Rotunda",
+      "nickname": "Bray Wyatt"
+    }
+  },
+  {
+    "rowkey": "champ:28",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Oscar",
+      "lastName": "Gutierrez",
+      "nickname": "Rey Mysterio"
+    }
+  },
+  {
+    "rowkey": "champ:29",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Brock",
+      "lastName": "Lesnar",
+      "nickname": "The Beast Incarnate"
+    }
+  },
+  {
+    "rowkey": "champ:30",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Dave",
+      "lastName": "Bautista",
+      "nickname": "Batista"
+    }
+  },
+  {
+    "rowkey": "champ:31",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Rebecca",
+      "lastName": "Quin",
+      "nickname": "Becky Lynch"
+    }
+  },
+  {
+    "rowkey": "champ:32",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Demi",
+      "lastName": "Bennett",
+      "nickname": "Rhea Ripley"
+    }
+  },
+  {
+    "rowkey": "champ:33",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Mercedes",
+      "lastName": "Kaestner-Varnado",
+      "nickname": "Sasha Banks"
+    }
+  },
+  {
+    "rowkey": "champ:34",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Ashley",
+      "lastName": "Flair",
+      "nickname": "Charlotte Flair"
+    }
+  },
+  {
+    "rowkey": "champ:35",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Kanako",
+      "lastName": "Urai",
+      "nickname": "Asuka"
+    }
+  },
+  {
+    "rowkey": "champ:36",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Bianca",
+      "lastName": "Blair",
+      "nickname": "Bianca Belair"
+    }
+  },
+  {
+    "rowkey": "champ:37",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Saraya",
+      "lastName": "Bevis",
+      "nickname": "Paige"
+    }
+  },
+  {
+    "rowkey": "champ:38",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Trish",
+      "lastName": "Stratus",
+      "nickname": "Trish Stratus"
+    }
+  },
+  {
+    "rowkey": "champ:39",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Amy",
+      "lastName": "Dumas",
+      "nickname": "Lita"
+    }
+  },
+  {
+    "rowkey": "champ:40",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Lisa",
+      "lastName": "Marie Varon",
+      "nickname": "Victoria"
+    }
+  },
+  {
+    "rowkey": "champ:41",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Melina",
+      "lastName": "Perez",
+      "nickname": "Melina"
+    }
+  },
+  {
+    "rowkey": "champ:42",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Natalie",
+      "lastName": "Neidhart",
+      "nickname": "Natalya"
+    }
+  },
+  {
+    "rowkey": "champ:43",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Pamela",
+      "lastName": "Martinez",
+      "nickname": "Bayley"
+    }
+  },
+  {
+    "rowkey": "champ:44",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Tenille",
+      "lastName": "Dashwood",
+      "nickname": "Emma"
+    }
+  },
+  {
+    "rowkey": "champ:45",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Leah",
+      "lastName": "Van Dale",
+      "nickname": "Carmella"
+    }
+  },
+  {
+    "rowkey": "champ:46",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Gionna",
+      "lastName": "Daddio",
+      "nickname": "Liv Morgan"
+    }
+  },
+  {
+    "rowkey": "champ:47",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Raquel",
+      "lastName": "González",
+      "nickname": "Raquel Rodriguez"
+    }
+  },
+  {
+    "rowkey": "champ:48",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Toni",
+      "lastName": "Rossall",
+      "nickname": "Toni Storm"
+    }
+  },
+  {
+    "rowkey": "champ:49",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Chelsea",
+      "lastName": "Green",
+      "nickname": "Chelsea Green"
+    }
+  },
+  {
+    "rowkey": "champ:50",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Ariane",
+      "lastName": "Andrew",
+      "nickname": "Cameron"
+    }
+  },
+  {
+    "rowkey": "champ:51",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Brianna",
+      "lastName": "Garcia-Colace",
+      "nickname": "Brie Bella"
+    }
+  },
+  {
+    "rowkey": "champ:52",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Stephanie",
+      "lastName": "Garcia-Colace",
+      "nickname": "Nikki Bella"
+    }
+  },
+  {
+    "rowkey": "champ:53",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Chyna",
+      "lastName": "Laurer",
+      "nickname": "Chyna"
+    }
+  },
+  {
+    "rowkey": "champ:54",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Nia",
+      "lastName": "Jax",
+      "nickname": "Nia Jax"
+    }
+  },
+  {
+    "rowkey": "champ:55",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Mandy",
+      "lastName": "Rose",
+      "nickname": "Mandy Rose"
+    }
+  },
+  {
+    "rowkey": "champ:56",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Dana",
+      "lastName": "Brooke",
+      "nickname": "Dana Brooke"
+    }
+  },
+  {
+    "rowkey": "champ:57",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Kayla",
+      "lastName": "Beck",
+      "nickname": "Lola Vice"
+    }
+  },
+  {
+    "rowkey": "champ:58",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Debrah",
+      "lastName": "Miceli",
+      "nickname": "Madusa"
+    }
+  },
+  {
+    "rowkey": "champ:59",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Shayna",
+      "lastName": "Baszler",
+      "nickname": "The Queen of Spades"
+    }
+  },
+  {
+    "rowkey": "champ:60",
+    "family": "wrestlers",
+    "qualifiers": {
+      "name": "Zelina",
+      "lastName": "Vega",
+      "nickname": "Zelina Vega"
+    }
+  }
+]
+

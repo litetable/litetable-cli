@@ -99,8 +99,6 @@ func writeData() error {
 		return fmt.Errorf("failed to unmarshal response: %w\nRaw: %s",
 			err, string(buffer[:n]))
 	}
-
-	fmt.Println(string(buffer[:n]))
 	elapsed := time.Since(now)
 	elapsedMs := float64(elapsed.Nanoseconds()) / 1_000_000.0
 	fmt.Printf("Roundtrip in %.2fms\n\n%s\n", elapsedMs, payload.PrettyPrint())

@@ -105,15 +105,16 @@ else
     SHELL_FILE="${HOME}/.bashrc"
   fi
 
-  if [ -n "$SHELL_FILE" ]; then
-    echo -e "Would you like to add ${INSTALL_DIR}/bin to your PATH in ${SHELL_FILE}? (y/n)"
-    read -r response
-    if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-      echo "export PATH=\"\$PATH:${INSTALL_DIR}/bin\"" >> "$SHELL_FILE"
-      echo -e "${GREEN}✓${NC} Added to PATH in ${SHELL_FILE}"
-      echo "Please restart your terminal or run: source ${SHELL_FILE}"
-    fi
+# Read command for shell file PATH addition
+if [ -n "$SHELL_FILE" ]; then
+  echo -e "Would you like to add ${INSTALL_DIR}/bin to your PATH in ${SHELL_FILE}? (y/n)"
+  read -r response </dev/tty
+  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    echo "export PATH=\"\$PATH:${INSTALL_DIR}/bin\"" >> "$SHELL_FILE"
+    echo -e "${GREEN}✓${NC} Added to PATH in ${SHELL_FILE}"
+    echo "Please restart your terminal or run: source ${SHELL_FILE}"
   fi
+fi
 fi
 
 echo -e "${GREEN}LiteTable CLI${NC} ${VERSION_TAG} ${GREEN}installed successfully!${NC}"

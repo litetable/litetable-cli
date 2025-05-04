@@ -16,12 +16,7 @@ var versionCommand = &cobra.Command{
 			fmt.Printf("Error: %v\n", err)
 			return
 		}
-		cliVersion, err := litetable.GetFromConfig(litetable.CLIVersionKey)
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-			return
-		}
-		fmt.Printf("LiteTable CLI Version: %s\n", cliVersion)
+		fmt.Printf("LiteTable CLI Version: %s\n", litetable.CLIVersion)
 		fmt.Printf("LiteTable Server Version: %s\n", version)
 	},
 }

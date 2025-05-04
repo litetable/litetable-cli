@@ -13,13 +13,14 @@ import (
 )
 
 const (
-	supportedVersion = "v0.1.2"
+	ServiceVersionKey = "server_version"
+	repoUrl           = "https://github.com/litetable/litetable-db"
 )
 
 var (
 	forceInit   bool
 	autostart   bool
-	serverRepo  = "https://github.com/litetable/litetable-db"
+	serverRepo  = repoUrl
 	serverBin   = "litetable-server"
 	InitCommand = &cobra.Command{
 		Use:   "init",
@@ -57,9 +58,7 @@ func initLiteTable() error {
 		binPath += ".exe"
 	}
 
-	// serverExists := false
 	if _, err := os.Stat(binPath); err == nil {
-		// serverExists = true
 		if !forceInit {
 			fmt.Println("\n⚠️ LiteTable server appears to be already installed.")
 			fmt.Print("Would you like to reinstall? (y/n): ")
@@ -82,18 +81,25 @@ func initLiteTable() error {
 		return fmt.Errorf("failed to create bin directory: %w", err)
 	}
 
-	// And in your initLiteTable function:
+	// Check prerequisites
 	if !checkGitInstalled() {
 		return fmt.Errorf("git is not installed. Please install Git (https://git-scm.com/downloads) and try again")
 	}
 	fmt.Println("✅ Git installation detected")
 
-	// Check for Go installation
 	fmt.Println("\n📋 Checking prerequisites...")
 	if !checkGoInstalled() {
 		return fmt.Errorf("go is not installed. Please install Go (https://go.dev/doc/install) and try again")
 	}
 	fmt.Println("✅ Go installation detected")
+
+	// Get latest version tag
+	fmt.Println("\n🔍 Determining latest version...")
+	latestVersion, err := getLatestVersion()
+	if err != nil {
+		return fmt.Errorf("failed to determine latest version: %w", err)
+	}
+	fmt.Printf("✅ Latest version: %s\n", latestVersion)
 
 	// Clone/update repo and build
 	fmt.Println("\n📥 Downloading latest LiteTable server...")
@@ -108,8 +114,8 @@ func initLiteTable() error {
 	}(tempDir)
 
 	// Clone the repository
-	fmt.Println("\n📥 Cloning LiteTable server repository...")
-	gitCloneCmd := exec.Command("git", "-c", "advice.detachedHead=false", "clone", "--depth", "1", "--branch", supportedVersion, serverRepo, tempDir)
+	fmt.Printf("\n📥 Cloning LiteTable server repository (version %s)...\n", latestVersion)
+	gitCloneCmd := exec.Command("git", "-c", "advice.detachedHead=false", "clone", "--depth", "1", "--branch", latestVersion, serverRepo, tempDir)
 
 	gitCloneCmd.Stdout = os.Stdout
 	gitCloneCmd.Stderr = os.Stderr
@@ -143,7 +149,6 @@ func initLiteTable() error {
 	// Generate TLS certificates if they don't exist
 	certDir := liteTableDir
 	certPath := filepath.Join(certDir, serverCertName)
-	// keyPath := filepath.Join(certDir, serverKeyName)
 
 	if _, err := os.Stat(certPath); os.IsNotExist(err) {
 		fmt.Println("\n🔐 Generating TLS certificates...")
@@ -162,15 +167,15 @@ func initLiteTable() error {
 
 	// Write a configuration file
 	configFile := filepath.Join(liteTableDir, "litetable.conf")
-	if err := writeConfigFile(configFile); err != nil {
+	if err := writeConfigFile(configFile, latestVersion); err != nil {
 		return fmt.Errorf("failed to write configuration: %w", err)
 	}
 
 	// Success message
 	fmt.Println("\n✅  LiteTable setup complete!")
-	fmt.Printf("Server installed at: %s\n", binPath)
+	fmt.Printf("Server version %s installed at: %s\n", latestVersion, binPath)
 	fmt.Println("\nTo start the server run:")
-	fmt.Println("  litetable start")
+	fmt.Println("  litetable service start")
 
 	return nil
 }
@@ -185,7 +190,7 @@ func checkGoInstalled() bool {
 	return cmd.Run() == nil
 }
 
-func writeConfigFile(path string) error {
+func writeConfigFile(path string, version string) error {
 	// Get the full path to the binary
 	liteTableDir, err := dir.GetLitetableDir()
 	if err != nil {
@@ -200,9 +205,9 @@ func writeConfigFile(path string) error {
 	content := fmt.Sprintf(`# LiteTable Server Configuration
 port = 9443
 server_binary = %s
-version = %s
+server_version = %s
 # Add other configuration options as needed
-`, binPath, supportedVersion)
+`, binPath, version)
 
 	return os.WriteFile(path, []byte(content), 0644)
 }

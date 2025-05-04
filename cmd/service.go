@@ -23,5 +23,6 @@ func init() {
 	serviceCmd.AddCommand(service.StartCommand)
 	serviceCmd.AddCommand(service.StopCommand)
 	// serviceCmd.AddCommand(service.CredentialsCmd)
+	serviceCmd.AddCommand(service.UpdateCommand)
 	serviceCmd.AddCommand(service.HealthCmd)
 }

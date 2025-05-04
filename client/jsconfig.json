@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "types": ["chrome", "node"],
+    "baseUrl": ".",
+    "paths": {
+      "#root/*": ["./*"],
+      "#src/*": ["./src/*"],
+      "#common/*": ["./src/common/*"],
+      "#components/*": ["./src/components/*"],
+      "#hooks/*": ["./src/hooks/*"]
+    }
+  }
+}

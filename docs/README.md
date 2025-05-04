@@ -1,20 +1,22 @@
 # litetable-cli
-The Litetable CLI is a command-line utility for easily working and prototyping with any Litetable server.
 **Litetable CLI is in active development**
 
 <img src="./images/litetable-logo-min.png" alt="LiteTable Logo" width="350px">
 
 
+The Litetable CLI is a command-line utility for easily working and prototyping with any 
+Litetable server. Simply download the CLI tool and stand up a litetable server is moments.
 
 1. Install the latest CLI:
    ```bash
    curl -fsSL https://raw.githubusercontent.com/litetable/litetable-cli/main/install.sh | bash
    ``` 
-   or
 
-   ```bash
-   go get github.com/litetable/litetable-cli
-   ```
+Verify the installation by running:
+```bash
+litetable version
+```
+
 2. Initialize a new LiteTable database:
    ```bash
     litetable service init

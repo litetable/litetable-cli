@@ -10,7 +10,6 @@ import (
 
 const (
 	ServerVersionKey = "server_version"
-	CLIVersionKey    = "cli_version"
 )
 
 func GetFromConfig(value string) (string, error) {

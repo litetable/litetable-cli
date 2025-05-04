@@ -8,10 +8,8 @@ import (
 )
 
 const (
-	CLIVersion  = "v0.1.7"
-	DatabaseURL = "https://github.com/litetable/litetable-db"
-	CLIURL      = "https://github.com/litetable/litetable-cli"
-
+	DatabaseURL   = "https://github.com/litetable/litetable-db"
+	CLIURL        = "https://github.com/litetable/litetable-cli"
 	CLIInstallURL = "https://raw.githubusercontent.com/litetable/litetable-cli/main/install.sh"
 )
 

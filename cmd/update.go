@@ -31,10 +31,7 @@ func init() {
 
 func updateCLI() error {
 	// Get current CLI version
-	currentVersion, err := litetable.GetFromConfig(litetable.CLIVersionKey)
-	if err != nil {
-		return fmt.Errorf("failed to get current CLI version: %w", err)
-	}
+	currentVersion := litetable.CLIVersion
 
 	fmt.Printf("Current CLI version: %s\nChecking for updates...\n", currentVersion)
 

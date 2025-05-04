@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	DashboardCommand = &cobra.Command{
+	Command = &cobra.Command{
 		Use:   "dashboard",
 		Short: "Open LiteTable dashboard in a browser",
 		Long:  "Opens a browser window with the LiteTable dashboard interface",

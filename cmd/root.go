@@ -26,7 +26,7 @@ func init() {
 	rootCmd.AddCommand(operations.ReadCmd)
 	rootCmd.AddCommand(operations.WriteCmd)
 	rootCmd.AddCommand(operations.DeleteCmd)
-	rootCmd.AddCommand(dashboard.DashboardCommand)
+	rootCmd.AddCommand(dashboard.Command)
 
 	rootCmd.AddCommand(serviceCmd)
 	rootCmd.AddCommand(UpdateCmd)

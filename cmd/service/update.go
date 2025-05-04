@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"runtime"
 	"strings"
 )
@@ -29,7 +28,7 @@ var UpdateCommand = &cobra.Command{
 
 func updateLiteTable() error {
 	// Get current version
-	currentVersion, err := getInstalledVersion()
+	currentVersion, err := litetable.GetFromConfig(litetable.ServerVersionKey)
 	if err != nil {
 		return fmt.Errorf("failed to get current version: %w", err)
 	}
@@ -44,7 +43,7 @@ func updateLiteTable() error {
 	}
 
 	// Compare versions
-	if !isUpdateAvailable(currentVersion, latestVersion) {
+	if !litetable.IsUpdateAvailable(currentVersion, latestVersion) {
 		fmt.Println("✅  You are already running the latest version!")
 		return nil
 	}
@@ -65,7 +64,7 @@ func updateLiteTable() error {
 	}
 	fmt.Println("Starting update process...")
 
-	// Get LiteTable directory
+	// Get LiteTable directory to verify running status
 	liteTableDir, err := dir.GetLitetableDir()
 	if err != nil {
 		return fmt.Errorf("failed to get LiteTable directory: %w", err)
@@ -125,9 +124,10 @@ func updateLiteTable() error {
 		}
 	}
 
-	// Update config file with new version
-	configPath := filepath.Join(liteTableDir, "litetable.conf")
-	if err := updateConfigVersion(configPath, latestVersion); err != nil {
+	if err = litetable.UpdateConfigValue(&litetable.UpdateConfig{
+		ConfigName: litetable.ServerVersionKey,
+		NewVersion: latestVersion,
+	}); err != nil {
 		return fmt.Errorf("failed to update config: %w", err)
 	}
 
@@ -135,107 +135,8 @@ func updateLiteTable() error {
 	return nil
 }
 
-func getInstalledVersion() (string, error) {
-	// Get LiteTable directory
-	liteTableDir, err := dir.GetLitetableDir()
-	if err != nil {
-		return "", fmt.Errorf("failed to get LiteTable directory: %w", err)
-	}
-
-	// Read the config file
-	configPath := filepath.Join(liteTableDir, "litetable.conf")
-	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		return "", fmt.Errorf("LiteTable is not installed or configuration file not found")
-	}
-
-	configBytes, err := os.ReadFile(configPath)
-	if err != nil {
-		return "", fmt.Errorf("failed to read config file: %w", err)
-	}
-
-	// Parse the config file to find version
-	configLines := strings.Split(string(configBytes), "\n")
-	for _, line := range configLines {
-		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, VersionKey) {
-			parts := strings.SplitN(line, "=", 2)
-			if len(parts) == 2 {
-				version := strings.TrimSpace(parts[1])
-				if version != "" {
-					return version, nil
-				}
-			}
-		}
-	}
-
-	return "", fmt.Errorf("version information not found in configuration")
-}
-
-func getLatestVersion() (string, error) {
-	// Use git to list remote tags and get the latest version
-	cmd := exec.Command("git", "ls-remote", "--tags", serverRepo)
-	output, err := cmd.Output()
-	if err != nil {
-		return "", fmt.Errorf("failed to fetch remote tags: %w", err)
-	}
-
-	// Parse output to find the latest version tag
-	re := regexp.MustCompile(`refs/tags/(v\d+\.\d+\.\d+)$`)
-	var versions []string
-
-	for _, line := range strings.Split(string(output), "\n") {
-		matches := re.FindStringSubmatch(line)
-		if len(matches) > 1 {
-			versions = append(versions, matches[1])
-		}
-	}
-
-	if len(versions) == 0 {
-		return "", fmt.Errorf("no version tags found")
-	}
-
-	// Sort versions and return the latest
-	// For simplicity, we'll rely on string comparison which works for vX.Y.Z format
-	latestVersion := versions[0]
-	for _, v := range versions[1:] {
-		if strings.Compare(v, latestVersion) > 0 {
-			latestVersion = v
-		}
-	}
-
-	return latestVersion, nil
-}
-
-func isUpdateAvailable(currentVersion, latestVersion string) bool {
-	return strings.Compare(latestVersion, currentVersion) > 0
-}
-
 func isServerRunning(liteTableDir string) bool {
 	pidFile := filepath.Join(liteTableDir, "litetable.pid")
 	_, err := os.Stat(pidFile)
 	return err == nil
-}
-
-func updateConfigVersion(configPath, newVersion string) error {
-	data, err := os.ReadFile(configPath)
-	if err != nil {
-		return err
-	}
-
-	configLines := strings.Split(string(data), "\n")
-	updated := false
-
-	for i, line := range configLines {
-		if strings.HasPrefix(strings.TrimSpace(line), VersionKey) {
-			configLines[i] = fmt.Sprintf("%s = %s", VersionKey, newVersion)
-			updated = true
-			break
-		}
-	}
-
-	if !updated {
-		configLines = append(configLines, fmt.Sprintf("%s = %s", VersionKey, newVersion))
-	}
-
-	return os.WriteFile(configPath, []byte(strings.Join(configLines, "\n")), 0644)
 }

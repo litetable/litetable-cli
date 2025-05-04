@@ -13,10 +13,6 @@ import (
 	"strings"
 )
 
-const (
-	VersionKey = "server_version"
-)
-
 var (
 	forceInit   bool
 	autostart   bool
@@ -85,17 +81,17 @@ func initLiteTable() error {
 	if !checkGitInstalled() {
 		return fmt.Errorf("git is not installed. Please install Git (https://git-scm.com/downloads) and try again")
 	}
-	fmt.Println("✅ Git installation detected")
+	fmt.Println("✅ Git installation detected\n📋 Checking prerequisites...")
 
-	fmt.Println("\n📋 Checking prerequisites...")
 	if !checkGoInstalled() {
 		return fmt.Errorf("go is not installed. Please install Go (https://go.dev/doc/install) and try again")
 	}
+
 	fmt.Println("✅ Go installation detected")
 
 	// Get latest version tag
 	fmt.Println("\n🔍 Determining latest version...")
-	latestVersion, err := getLatestVersion()
+	latestVersion, err := litetable.GetLatestVersion(litetable.DatabaseURL)
 	if err != nil {
 		return fmt.Errorf("failed to determine latest version: %w", err)
 	}
@@ -203,12 +199,12 @@ func writeConfigFile(path string, version string) error {
 	}
 
 	content := fmt.Sprintf(`# LiteTable Server Configuration
-port = 9443
-cli_version = %s
 server_binary = %s
-server_version = %s
+port = 9443
+%s = %s
+%s = %s
 # Add other configuration options as needed
-`, litetable.CLIVersion, binPath, version)
+`, binPath, litetable.CLIVersionKey, litetable.CLIVersion, litetable.ServerVersionKey, version)
 
 	return os.WriteFile(path, []byte(content), 0644)
 }

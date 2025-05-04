@@ -8,8 +8,11 @@ import (
 )
 
 const (
-	CLIVersion  = "0.1.0"
+	CLIVersion  = "v0.1.0"
 	DatabaseURL = "https://github.com/litetable/litetable-db"
+	CLIURL      = "https://github.com/litetable/litetable-cli"
+
+	CLIInstallURL = "https://raw.githubusercontent.com/litetable/litetable-cli/main/install.sh"
 )
 
 // TimestampedValue stores a value with its timestamp

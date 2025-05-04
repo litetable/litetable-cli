@@ -42,3 +42,7 @@ func GetLatestVersion(url string) (string, error) {
 
 	return latestVersion, nil
 }
+
+func IsUpdateAvailable(currentVersion, latestVersion string) bool {
+	return strings.Compare(latestVersion, currentVersion) > 0
+}

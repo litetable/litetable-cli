@@ -1,6 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import path from "node:path";
+import path from "path";
+
+import process from "node:process";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
@@ -30,6 +32,12 @@ export default defineConfig({
         chunkFileNames: "assets/[name].[hash].js",
         assetFileNames: "assets/[name].[hash].[ext]",
       },
+    },
+  },
+
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
     },
   },
 

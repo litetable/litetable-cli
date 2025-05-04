@@ -15,7 +15,8 @@ var (
 	wipeCmd = &cobra.Command{
 		Use:   "wipe",
 		Short: "Wipe all LiteTable data",
-		Long:  "Wipe removes all LiteTable data files and the write-ahead log",
+		Long: "Wipe removes all LiteTable data files from the WAL, Garbage Collector, " +
+			"and data backups. Does not remove server configuration.",
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := wipeData(); err != nil {
 				fmt.Printf("Error: %v\n", err)

@@ -50,8 +50,8 @@ func GetFromConfig(value string) (string, error) {
 }
 
 type UpdateConfig struct {
-	ConfigName string
-	NewVersion string
+	Key   string
+	Value string
 }
 
 // UpdateConfigValue updates the LiteTable configuration file with the provided key and value
@@ -73,15 +73,15 @@ func UpdateConfigValue(cfg *UpdateConfig) error {
 	updated := false
 
 	for i, line := range configLines {
-		if strings.HasPrefix(strings.TrimSpace(line), cfg.ConfigName) {
-			configLines[i] = fmt.Sprintf("%s = %s", cfg.ConfigName, cfg.NewVersion)
+		if strings.HasPrefix(strings.TrimSpace(line), cfg.Key) {
+			configLines[i] = fmt.Sprintf("%s = %s", cfg.Key, cfg.Value)
 			updated = true
 			break
 		}
 	}
 
 	if !updated {
-		configLines = append(configLines, fmt.Sprintf("%s = %s", cfg.ConfigName, cfg.NewVersion))
+		configLines = append(configLines, fmt.Sprintf("%s = %s", cfg.Key, cfg.Value))
 	}
 
 	return os.WriteFile(configPath, []byte(strings.Join(configLines, "\n")), 0644)

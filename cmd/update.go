@@ -64,7 +64,7 @@ func updateCLI() error {
 		fmt.Println("Update canceled.")
 		return nil
 	}
-	
+
 	// Start the update
 	fmt.Println("Starting update process...")
 
@@ -88,6 +88,13 @@ func updateCLI() error {
 		return fmt.Errorf("update failed: %w", err)
 	}
 
+	// update the version to latest
+	if err = litetable.UpdateConfigValue(&litetable.UpdateConfig{
+		Key:   litetable.CLIVersionKey,
+		Value: latestVersion,
+	}); err != nil {
+		return fmt.Errorf("failed to update version in config: %w", err)
+	}
 	fmt.Printf("✅  Successfully updated CLI to version %s!\n", latestVersion)
 	return nil
 }

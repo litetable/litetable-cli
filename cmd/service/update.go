@@ -125,8 +125,8 @@ func updateLiteTable() error {
 	}
 
 	if err = litetable.UpdateConfigValue(&litetable.UpdateConfig{
-		ConfigName: litetable.ServerVersionKey,
-		NewVersion: latestVersion,
+		Key:   litetable.ServerVersionKey,
+		Value: latestVersion,
 	}); err != nil {
 		return fmt.Errorf("failed to update config: %w", err)
 	}

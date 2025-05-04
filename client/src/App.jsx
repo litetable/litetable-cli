@@ -1,8 +1,9 @@
-export default function App() {
+function App() {
   return (
     <div>
-      <h1>LiteTable Dashboard</h1>
-      <p>Welcome to the dashboard!</p>
+      <h1 className={"text-3xl"}>Welcome to LiteTable!</h1>
     </div>
   );
 }
+
+export default App;

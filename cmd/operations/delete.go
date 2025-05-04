@@ -1,4 +1,4 @@
-package cmd
+package operations
 
 import (
 	"errors"
@@ -17,7 +17,7 @@ var (
 	deleteTTL       int64
 	deleteFrom      string
 
-	deleteCmd = &cobra.Command{
+	DeleteCmd = &cobra.Command{
 		Use:   "delete",
 		Short: "Delete data from the Litetable server",
 		Long:  "Delete allows you to remove data from the Litetable server",
@@ -32,18 +32,15 @@ var (
 )
 
 func init() {
-	// Register delete command with root command
-	rootCmd.AddCommand(deleteCmd)
-
 	// Add flags for delete operation
-	deleteCmd.Flags().StringVarP(&deleteKey, "key", "k", "", "Row key to delete (required)")
-	deleteCmd.Flags().StringVarP(&deleteFamily, "family", "f", "", "Column family to delete")
-	deleteCmd.Flags().StringArrayVarP(&deleteQualifier, "qualifier", "q", []string{}, "Qualifiers to delete (can be specified multiple times)")
-	deleteCmd.Flags().Int64Var(&deleteTTL, "ttl", 0, "Time-to-live in seconds for tombstone entries")
-	deleteCmd.Flags().StringVar(&deleteFrom, "from", "", "Starting position for deletion in the map")
+	DeleteCmd.Flags().StringVarP(&deleteKey, "key", "k", "", "Row key to delete (required)")
+	DeleteCmd.Flags().StringVarP(&deleteFamily, "family", "f", "", "Column family to delete")
+	DeleteCmd.Flags().StringArrayVarP(&deleteQualifier, "qualifier", "q", []string{}, "Qualifiers to delete (can be specified multiple times)")
+	DeleteCmd.Flags().Int64Var(&deleteTTL, "ttl", 0, "Time-to-live in seconds for tombstone entries")
+	DeleteCmd.Flags().StringVar(&deleteFrom, "from", "", "Starting position for deletion in the map")
 
 	// Mark required flags
-	_ = deleteCmd.MarkFlagRequired("key")
+	_ = DeleteCmd.MarkFlagRequired("key")
 }
 
 func deleteData() error {
@@ -97,7 +94,7 @@ func deleteData() error {
 			fullResponse = append(fullResponse, buffer[:n]...)
 
 			// Check if we have a complete JSON object
-			if len(fullResponse) > 0 && isValidJSON(fullResponse) {
+			if len(fullResponse) > 0 && IsValidJSON(fullResponse) {
 				break
 			}
 		}

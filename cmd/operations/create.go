@@ -1,4 +1,4 @@
-package cmd
+package operations
 
 import (
 	"encoding/json"
@@ -14,7 +14,7 @@ var (
 	// Create command options
 	families string
 
-	createCmd = &cobra.Command{
+	CreateCmd = &cobra.Command{
 		Use:   "create",
 		Short: "Create configuration in the Litetable server",
 		Long:  "Create configuration elements such as column families in the Litetable server",
@@ -28,12 +28,9 @@ var (
 )
 
 func init() {
-	// Add create command to root command
-	rootCmd.AddCommand(createCmd)
-
 	// Add flags for create operation
-	createCmd.Flags().StringVarP(&families, "family", "f", "", "Column families to create (comma-separated)")
-	_ = createCmd.MarkFlagRequired("family")
+	CreateCmd.Flags().StringVarP(&families, "family", "f", "", "Column families to create (comma-separated)")
+	_ = CreateCmd.MarkFlagRequired("family")
 }
 
 func createConfig() error {

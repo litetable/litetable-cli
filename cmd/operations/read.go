@@ -1,4 +1,4 @@
-package cmd
+package operations
 
 import (
 	"encoding/json"
@@ -20,7 +20,7 @@ var (
 	readQualifier []string
 	readLatest    int
 
-	readCmd = &cobra.Command{
+	ReadCmd = &cobra.Command{
 		Use:   "read",
 		Short: "Read data from the Litetable server",
 		Long:  "Read allows you to retrieve data from the Litetable server",
@@ -52,21 +52,18 @@ var (
 )
 
 func init() {
-	// Add read command to root command
-	rootCmd.AddCommand(readCmd)
-
 	// Add flags for read operation
-	readCmd.Flags().StringVarP(&readKey, "key", "k", "", "Row key to read")
-	readCmd.Flags().StringVarP(&readKeyPrefix, "keyPrefix", "p", "",
+	ReadCmd.Flags().StringVarP(&readKey, "key", "k", "", "Row key to read")
+	ReadCmd.Flags().StringVarP(&readKeyPrefix, "keyPrefix", "p", "",
 		"Read all row-keys with this prefix")
-	readCmd.Flags().StringVarP(&readRegex, "regex", "r", "",
+	ReadCmd.Flags().StringVarP(&readRegex, "regex", "r", "",
 		"Read all row-keys matching this regex pattern")
-	readCmd.Flags().StringVarP(&readFamily, "family", "f", "", "Column family to read")
-	readCmd.Flags().StringArrayVarP(&readQualifier, "qualifier", "q", []string{}, "Qualifiers to read (can be specified multiple times)")
-	readCmd.Flags().IntVarP(&readLatest, "latest", "l", 0, "Number of latest versions to return")
+	ReadCmd.Flags().StringVarP(&readFamily, "family", "f", "", "Column family to read")
+	ReadCmd.Flags().StringArrayVarP(&readQualifier, "qualifier", "q", []string{}, "Qualifiers to read (can be specified multiple times)")
+	ReadCmd.Flags().IntVarP(&readLatest, "latest", "l", 0, "Number of latest versions to return")
 
 	// Mark required flags - removing the required mark for key
-	_ = readCmd.MarkFlagRequired("family")
+	_ = ReadCmd.MarkFlagRequired("family")
 }
 
 func readData() error {
@@ -129,7 +126,7 @@ func readData() error {
 			fullResponse = append(fullResponse, buffer[:n]...)
 
 			// Check if we have a complete JSON object
-			if len(fullResponse) > 0 && isValidJSON(fullResponse) {
+			if len(fullResponse) > 0 && IsValidJSON(fullResponse) {
 				break
 			}
 		}
@@ -185,4 +182,10 @@ func readData() error {
 	fmt.Printf("Roundtrip in %.2fms\n", elapsedMs)
 
 	return nil
+}
+
+// IsValidJSON checks if the buffer contains a complete, valid JSON object
+func IsValidJSON(data []byte) bool {
+	var js json.RawMessage
+	return json.Unmarshal(data, &js) == nil
 }

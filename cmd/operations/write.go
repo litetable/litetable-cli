@@ -1,4 +1,4 @@
-package cmd
+package operations
 
 import (
 	"encoding/json"
@@ -19,7 +19,7 @@ var (
 	writeValues []string
 	writeTTL    int64
 
-	writeCmd = &cobra.Command{
+	WriteCmd = &cobra.Command{
 		Use:   "write",
 		Short: "Write data to the Litetable server",
 		Long:  "Write allows you to send data to the Litetable server",
@@ -55,17 +55,15 @@ var (
 )
 
 func init() {
-	writeCmd.Flags().StringVarP(&writeKey, "key", "k", "", "Row key for the write operation")
-	writeCmd.Flags().StringVarP(&writeFamily, "family", "f", "",
+	WriteCmd.Flags().StringVarP(&writeKey, "key", "k", "", "Row key for the write operation")
+	WriteCmd.Flags().StringVarP(&writeFamily, "family", "f", "",
 		"Column family for the write operation")
-	writeCmd.Flags().StringArrayVarP(&writeQuals, "qualifier", "q", []string{},
+	WriteCmd.Flags().StringArrayVarP(&writeQuals, "qualifier", "q", []string{},
 		"Qualifiers to read (can be specified multiple times)")
-	writeCmd.Flags().StringArrayVarP(&writeValues, "value", "v", []string{},
+	WriteCmd.Flags().StringArrayVarP(&writeValues, "value", "v", []string{},
 		"Values to write (can be specified multiple times, use quotes for values with spaces)")
-	writeCmd.Flags().Int64VarP(&writeTTL, "ttl", "t", 0,
+	WriteCmd.Flags().Int64VarP(&writeTTL, "ttl", "t", 0,
 		"Time to live in seconds (0 means no expiration)")
-
-	rootCmd.AddCommand(writeCmd)
 }
 
 func writeData() error {

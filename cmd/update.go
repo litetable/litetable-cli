@@ -43,7 +43,7 @@ func updateCLI() error {
 
 	// Compare versions
 	if !litetable.IsUpdateAvailable(currentVersion, latestVersion) {
-		fmt.Println("✅ Your CLI is already running the latest version!")
+		fmt.Println("✅  Your CLI is already running the latest version!")
 		return nil
 	}
 

@@ -3,7 +3,12 @@ The Litetable CLI is a command-line utility for easily working and prototyping w
 
 **Litetable CLI is in active development**
 
-1. Install the CLI:
+1. Install the latest CLI:
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/litetable/litetable-cli/main/install.sh | bash
+   ``` 
+   or
+
    ```bash
    go get github.com/litetable/litetable-cli
    ```

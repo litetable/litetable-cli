@@ -38,7 +38,12 @@ func wipeData() error {
 	}
 
 	liteTableDir := filepath.Join(homeDir, ".litetable")
+
+	familiesFile := filepath.Join(liteTableDir, "families.config.json")
+	reaperFile := filepath.Join(liteTableDir, ".reaper.gc.log")
+
 	tableDir := filepath.Join(liteTableDir, ".table")
+
 	walDir := filepath.Join(liteTableDir, "wal")
 	walLogFile := filepath.Join(walDir, "wal.log")
 
@@ -51,6 +56,14 @@ func wipeData() error {
 
 	if _, err := os.Stat(walLogFile); err == nil {
 		pathsToRemove = append(pathsToRemove, walLogFile)
+	}
+
+	if _, err := os.Stat(familiesFile); err == nil {
+		pathsToRemove = append(pathsToRemove, familiesFile)
+	}
+
+	if _, err := os.Stat(reaperFile); err == nil {
+		pathsToRemove = append(pathsToRemove, reaperFile)
 	}
 
 	if len(pathsToRemove) == 0 {

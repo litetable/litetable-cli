@@ -35,7 +35,8 @@ var (
 	generateCmd = &cobra.Command{
 		Use:   "generate",
 		Short: "Generate credentials",
-		Long:  "Generate credentials for a Litetable Instance",
+		Long: "Generate credentials for a Litetable Instance. " +
+			"Any previously generated credentials will be overwritten.",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("Generating credentials...")
 			// Your generation logic here

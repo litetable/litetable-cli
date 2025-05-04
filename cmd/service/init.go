@@ -202,9 +202,8 @@ func writeConfigFile(path string, version string) error {
 server_binary = %s
 port = 9443
 %s = %s
-%s = %s
 # Add other configuration options as needed
-`, binPath, litetable.CLIVersionKey, litetable.CLIVersion, litetable.ServerVersionKey, version)
+`, binPath, litetable.ServerVersionKey, version)
 
 	return os.WriteFile(path, []byte(content), 0644)
 }

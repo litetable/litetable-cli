@@ -10,7 +10,8 @@ var (
 		Use:     "litetable",
 		Example: "litetable --help",
 		Short:   "A CLI tool for interacting with litetable",
-		Long:    "Litetable is a high-performance key-value store designed for local development. Proudly written in pure Go.\n",
+		Long: "Litetable is a high-performance key-value store designed with local" +
+			" development in mind. Proudly written in pure Go.\n",
 		Run: func(cmd *cobra.Command, args []string) {
 			_ = cmd.Help()
 		},

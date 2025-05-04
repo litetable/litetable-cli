@@ -108,7 +108,8 @@ func initLiteTable() error {
 
 	// Clone the repository
 	fmt.Println("\n📥 Cloning LiteTable server repository...")
-	gitCloneCmd := exec.Command("git", "clone", "--depth", "1", "--branch", supportedVersion, serverRepo, tempDir)
+	gitCloneCmd := exec.Command("git", "-c", "advice.detachedHead=false", "clone", "--depth", "1", "--branch", supportedVersion, serverRepo, tempDir)
+
 	gitCloneCmd.Stdout = os.Stdout
 	gitCloneCmd.Stderr = os.Stderr
 	if err := gitCloneCmd.Run(); err != nil {
@@ -117,7 +118,13 @@ func initLiteTable() error {
 
 	// Build the server
 	fmt.Println("\n🔨 Building server...")
+	fmt.Printf("🎯 Building for %s/%s\n", runtime.GOOS, runtime.GOARCH)
+
 	buildCmd := exec.Command("go", "build", "-o", binPath)
+	// Set build environment variables to ensure correct OS/architecture targeting
+	buildCmd.Env = append(os.Environ(),
+		fmt.Sprintf("GOOS=%s", runtime.GOOS),
+		fmt.Sprintf("GOARCH=%s", runtime.GOARCH))
 	buildCmd.Dir = tempDir // Run the build command in the cloned repository directory
 	buildCmd.Stdout = os.Stdout
 	buildCmd.Stderr = os.Stderr
@@ -186,10 +193,23 @@ func checkGoInstalled() bool {
 }
 
 func writeConfigFile(path string) error {
-	content := `# LiteTable Server Configuration
-port = 9090
+	// Get the full path to the binary
+	liteTableDir, err := dir.GetLitetableDir()
+	if err != nil {
+		return err
+	}
+
+	binPath := filepath.Join(liteTableDir, "bin", serverBin)
+	if runtime.GOOS == "windows" {
+		binPath += ".exe"
+	}
+
+	content := fmt.Sprintf(`# LiteTable Server Configuration
+port = 9443
+server_binary = %s
 # Add other configuration options as needed
-`
+`, binPath)
+
 	return os.WriteFile(path, []byte(content), 0644)
 }
 

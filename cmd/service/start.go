@@ -1,4 +1,4 @@
-package cmd
+package service
 
 import (
 	"bufio"
@@ -15,7 +15,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var startCommand = &cobra.Command{
+var StartCommand = &cobra.Command{
 	Use:   "start",
 	Short: "Start the LiteTable server",
 	Long:  "Start the LiteTable server if installed, otherwise prompt to run init",
@@ -25,10 +25,6 @@ var startCommand = &cobra.Command{
 			return
 		}
 	},
-}
-
-func init() {
-	rootCmd.AddCommand(startCommand)
 }
 
 func startLiteTable() error {
@@ -119,6 +115,6 @@ func startLiteTable() error {
 		return fmt.Errorf("failed to write PID file: %w", err)
 	}
 
-	fmt.Printf("✅ LiteTable server started with PID: %d\n", pid)
+	fmt.Printf("✅  LiteTable server started with PID: %d\n", pid)
 	return nil
 }

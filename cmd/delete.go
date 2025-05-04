@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"github.com/litetable/litetable-cli/cmd/service"
 	"github.com/spf13/cobra"
 	"io"
 	"time"
@@ -46,7 +47,7 @@ func init() {
 }
 
 func deleteData() error {
-	conn, err := dial()
+	conn, err := service.Dial()
 	if err != nil {
 		return fmt.Errorf("failed to dial server: %w", err)
 	}

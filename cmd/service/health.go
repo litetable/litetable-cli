@@ -1,4 +1,4 @@
-package cmd
+package service
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 	"net"
 )
 
-// healthCmd represents the health command
-var healthCmd = &cobra.Command{
+// HealthCmd represents the health command
+var HealthCmd = &cobra.Command{
 	Use:   "health",
 	Short: "Check if the LiteTable server is running",
 	Long:  `Sends a PING request to the LiteTable server to verify it's operational.`,
@@ -16,14 +16,10 @@ var healthCmd = &cobra.Command{
 	},
 }
 
-func init() {
-	rootCmd.AddCommand(healthCmd)
-}
-
 func checkServerHealth() error {
 	fmt.Println("🔍 Checking LiteTable server health...")
 
-	conn, err := dial()
+	conn, err := Dial()
 	if err != nil {
 		return fmt.Errorf("failed to dial server: %w", err)
 	}

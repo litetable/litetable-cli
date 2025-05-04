@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/litetable/litetable-cli/cmd/service"
 	"github.com/litetable/litetable-cli/internal/litetable"
 	"github.com/spf13/cobra"
 	"io"
@@ -69,7 +70,7 @@ func init() {
 }
 
 func readData() error {
-	conn, err := dial()
+	conn, err := service.Dial()
 	if err != nil {
 		return fmt.Errorf("failed to dial server: %w", err)
 	}

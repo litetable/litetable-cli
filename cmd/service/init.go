@@ -1,4 +1,4 @@
-package cmd
+package service
 
 import (
 	"bufio"
@@ -35,7 +35,6 @@ var (
 )
 
 func init() {
-	rootCmd.AddCommand(initCommand)
 	initCommand.Flags().BoolVarP(&forceInit, "force", "f", false, "Force reinstallation if already installed")
 	initCommand.Flags().BoolVarP(&autostart, "autostart", "a", false, "Configure server to start automatically")
 }
@@ -60,7 +59,7 @@ func initLiteTable() error {
 	if _, err := os.Stat(binPath); err == nil {
 		// serverExists = true
 		if !forceInit {
-			fmt.Println("\n⚠️  LiteTable server appears to be already installed.")
+			fmt.Println("\n⚠️ LiteTable server appears to be already installed.")
 			fmt.Print("Would you like to reinstall? (y/n): ")
 			reader := bufio.NewReader(os.Stdin)
 			response, err := reader.ReadString('\n')
@@ -166,18 +165,10 @@ func initLiteTable() error {
 	}
 
 	// Success message
-	fmt.Println("\n✅ LiteTable setup complete!")
+	fmt.Println("\n✅  LiteTable setup complete!")
 	fmt.Printf("Server installed at: %s\n", binPath)
-	if !autostart {
-		fmt.Println("\nTo start the server manually:")
-		fmt.Printf("  %s\n", binPath)
-		fmt.Println("\nOr use the CLI command:")
-		fmt.Println("  litetable-cli service start")
-	} else {
-		fmt.Println("\nServer configured to start automatically")
-		fmt.Println("You can manage the service with:")
-		fmt.Println("  litetable-cli service status|start|stop|restart")
-	}
+	fmt.Println("\nTo start the server run:")
+	fmt.Println("  litetable start")
 
 	return nil
 }

@@ -1,4 +1,4 @@
-package cmd
+package service
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var stopCommand = &cobra.Command{
+var StopCommand = &cobra.Command{
 	Use:   "stop",
 	Short: "Stop the running LiteTable server",
 	Long:  "Stop the LiteTable server by sending a SIGTERM signal for graceful shutdown",
@@ -25,10 +25,6 @@ var stopCommand = &cobra.Command{
 	},
 }
 
-func init() {
-	rootCmd.AddCommand(stopCommand)
-}
-
 func stopLiteTable() error {
 	fmt.Println("⏹️ Stopping LiteTable server...")
 
@@ -38,13 +34,13 @@ func stopLiteTable() error {
 		return fmt.Errorf("failed to get LiteTable directory: %w", err)
 	}
 
-	// Check for PID file
+	// Check for a PID file
 	pidFile := filepath.Join(liteTableDir, "litetable.pid")
 	if _, err := os.Stat(pidFile); os.IsNotExist(err) {
 		return fmt.Errorf("no running LiteTable server found")
 	}
 
-	// Read PID from file
+	// Read PID from a file
 	pidBytes, err := os.ReadFile(pidFile)
 	if err != nil {
 		return fmt.Errorf("failed to read PID file: %w", err)
@@ -72,7 +68,7 @@ func stopLiteTable() error {
 	}
 
 	// Wait for a short period to see if a process terminates
-	fmt.Println("⏳ Waiting for server to shut down...")
+	fmt.Println("⏳  Waiting for server to shut down...")
 
 	// Create a timeout channel
 	timeout := time.After(5 * time.Second)
@@ -81,7 +77,7 @@ func stopLiteTable() error {
 	// Check if the process has terminated
 	go func() {
 		for {
-			// Check if process still exists
+			// Check if the process still exists
 			if err := process.Signal(syscall.Signal(0)); err != nil {
 				// Process has terminated
 				close(shutdown)
@@ -94,9 +90,9 @@ func stopLiteTable() error {
 	// Wait for shutdown or timeout
 	select {
 	case <-shutdown:
-		fmt.Println("✅ LiteTable server has been stopped successfully.")
+		fmt.Println("✅  LiteTable server has been stopped successfully.")
 	case <-timeout:
-		fmt.Println("⚠️ Timeout waiting for server to stop.")
+		fmt.Println("⚠️  Timeout waiting for server to stop.")
 	}
 
 	// Clean up PID file

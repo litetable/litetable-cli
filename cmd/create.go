@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/litetable/litetable-cli/cmd/service"
 	"github.com/spf13/cobra"
 	"net/url"
 	"strings"
@@ -36,7 +37,7 @@ func init() {
 }
 
 func createConfig() error {
-	conn, err := dial()
+	conn, err := service.Dial()
 	if err != nil {
 		return fmt.Errorf("failed to dial server: %w", err)
 	}

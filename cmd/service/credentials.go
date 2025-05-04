@@ -1,4 +1,4 @@
-package cmd
+package service
 
 import (
 	"crypto/rand"
@@ -16,13 +16,8 @@ import (
 	"time"
 )
 
-const (
-	serverCertName = "server.crt"
-	serverKeyName  = "server.key"
-)
-
 var (
-	credentialsCmd = &cobra.Command{
+	CredentialsCmd = &cobra.Command{
 		Use:   "credentials",
 		Short: "Manage credentials",
 		Long:  "Manage credentials for a Litetable Instance",
@@ -50,8 +45,7 @@ var (
 
 func init() {
 	// create a generate flag
-	credentialsCmd.AddCommand(generateCmd)
-	rootCmd.AddCommand(credentialsCmd)
+	CredentialsCmd.AddCommand(generateCmd)
 }
 
 // generateCredentials generates an openSSL certificate that all instances

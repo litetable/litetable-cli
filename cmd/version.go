@@ -51,7 +51,7 @@ func getInstalledVersion() (string, error) {
 	configLines := strings.Split(string(configBytes), "\n")
 	for _, line := range configLines {
 		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, service.ServiceVersionKey) {
+		if strings.HasPrefix(line, service.VersionKey) {
 			parts := strings.SplitN(line, "=", 2)
 			if len(parts) == 2 {
 				version := strings.TrimSpace(parts[1])

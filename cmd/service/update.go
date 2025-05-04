@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/litetable/litetable-cli/internal/dir"
+	"github.com/litetable/litetable-cli/internal/litetable"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"
@@ -36,8 +37,8 @@ func updateLiteTable() error {
 	fmt.Printf("Current version: %s\n", currentVersion)
 	fmt.Println("Checking for updates...")
 
-	// Get latest version from git repository
-	latestVersion, err := getLatestVersion()
+	// Get the latest version from git repository
+	latestVersion, err := litetable.GetLatestVersion(serverRepo)
 	if err != nil {
 		return fmt.Errorf("failed to check for latest version: %w", err)
 	}
@@ -87,7 +88,7 @@ func updateLiteTable() error {
 
 	// Clone the repository
 	fmt.Println("📥 Downloading latest LiteTable server...")
-	cloneCmd := exec.Command("git", "clone", "--depth", "1", "-b", latestVersion, repoUrl, tempDir)
+	cloneCmd := exec.Command("git", "clone", "--depth", "1", "-b", latestVersion, serverRepo, tempDir)
 	cloneCmd.Stdout = os.Stdout
 	cloneCmd.Stderr = os.Stderr
 	if err := cloneCmd.Run(); err != nil {
@@ -156,7 +157,7 @@ func getInstalledVersion() (string, error) {
 	configLines := strings.Split(string(configBytes), "\n")
 	for _, line := range configLines {
 		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, ServiceVersionKey) {
+		if strings.HasPrefix(line, VersionKey) {
 			parts := strings.SplitN(line, "=", 2)
 			if len(parts) == 2 {
 				version := strings.TrimSpace(parts[1])
@@ -172,7 +173,7 @@ func getInstalledVersion() (string, error) {
 
 func getLatestVersion() (string, error) {
 	// Use git to list remote tags and get the latest version
-	cmd := exec.Command("git", "ls-remote", "--tags", repoUrl)
+	cmd := exec.Command("git", "ls-remote", "--tags", serverRepo)
 	output, err := cmd.Output()
 	if err != nil {
 		return "", fmt.Errorf("failed to fetch remote tags: %w", err)
@@ -225,15 +226,15 @@ func updateConfigVersion(configPath, newVersion string) error {
 	updated := false
 
 	for i, line := range configLines {
-		if strings.HasPrefix(strings.TrimSpace(line), ServiceVersionKey) {
-			configLines[i] = fmt.Sprintf("%s = %s", ServiceVersionKey, newVersion)
+		if strings.HasPrefix(strings.TrimSpace(line), VersionKey) {
+			configLines[i] = fmt.Sprintf("%s = %s", VersionKey, newVersion)
 			updated = true
 			break
 		}
 	}
 
 	if !updated {
-		configLines = append(configLines, fmt.Sprintf("%s = %s", ServiceVersionKey, newVersion))
+		configLines = append(configLines, fmt.Sprintf("%s = %s", VersionKey, newVersion))
 	}
 
 	return os.WriteFile(configPath, []byte(strings.Join(configLines, "\n")), 0644)

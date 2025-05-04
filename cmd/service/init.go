@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/litetable/litetable-cli/internal/dir"
+	"github.com/litetable/litetable-cli/internal/litetable"
 	"github.com/spf13/cobra"
 	"os"
 	"os/exec"
@@ -13,14 +14,13 @@ import (
 )
 
 const (
-	ServiceVersionKey = "server_version"
-	repoUrl           = "https://github.com/litetable/litetable-db"
+	VersionKey = "server_version"
 )
 
 var (
 	forceInit   bool
 	autostart   bool
-	serverRepo  = repoUrl
+	serverRepo  = litetable.DatabaseURL
 	serverBin   = "litetable-server"
 	InitCommand = &cobra.Command{
 		Use:   "init",
@@ -204,10 +204,11 @@ func writeConfigFile(path string, version string) error {
 
 	content := fmt.Sprintf(`# LiteTable Server Configuration
 port = 9443
+cli_version = %s
 server_binary = %s
 server_version = %s
 # Add other configuration options as needed
-`, binPath, version)
+`, litetable.CLIVersion, binPath, version)
 
 	return os.WriteFile(path, []byte(content), 0644)
 }

@@ -7,6 +7,11 @@ import (
 	"time"
 )
 
+const (
+	CLIVersion  = "0.1.0"
+	DatabaseURL = "https://github.com/litetable/litetable-db"
+)
+
 // TimestampedValue stores a value with its timestamp
 type TimestampedValue struct {
 	Value     []byte    `json:"-"`         // Internal binary representation
@@ -15,7 +20,7 @@ type TimestampedValue struct {
 	RawTime   string    `json:"timestamp"` // String timestamp from JSON
 }
 
-// UnmarshalJSON implements custom unmarshaling for TimestampedValue
+// UnmarshalJSON implements custom unmarshalling for TimestampedValue
 func (tv *TimestampedValue) UnmarshalJSON(data []byte) error {
 	// Temporary struct for parsing
 	temp := struct {

@@ -25,10 +25,6 @@ var (
 	}
 )
 
-func init() {
-	rootCmd.AddCommand(UpdateCmd)
-}
-
 func updateCLI() error {
 	// Get current CLI version
 	currentVersion := litetable.CLIVersion

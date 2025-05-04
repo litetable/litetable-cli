@@ -27,7 +27,6 @@ var (
 )
 
 func init() {
-	rootCmd.AddCommand(wipeCmd)
 	wipeCmd.Flags().BoolVarP(&forceWipe, "force", "f", false, "Skip confirmation prompt")
 }
 

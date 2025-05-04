@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/litetable/litetable-cli/cmd/dashboard"
+	"github.com/litetable/litetable-cli/cmd/operations"
 	"github.com/spf13/cobra"
 )
 
@@ -17,6 +19,23 @@ var (
 		},
 	}
 )
+
+func init() {
+	// Add operations commands to the root command
+	rootCmd.AddCommand(operations.CreateCmd)
+	rootCmd.AddCommand(operations.ReadCmd)
+	rootCmd.AddCommand(operations.WriteCmd)
+	rootCmd.AddCommand(operations.DeleteCmd)
+	rootCmd.AddCommand(dashboard.DashboardCommand)
+
+	rootCmd.AddCommand(serviceCmd)
+	rootCmd.AddCommand(UpdateCmd)
+
+	rootCmd.AddCommand(uninstallCommand)
+	rootCmd.AddCommand(versionCommand)
+
+	rootCmd.AddCommand(wipeCmd)
+}
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {

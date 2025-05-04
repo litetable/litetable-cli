@@ -15,9 +15,6 @@ var serviceCmd = &cobra.Command{
 }
 
 func init() {
-	// Add the service command to the root command
-	rootCmd.AddCommand(serviceCmd)
-
 	// Add subcommands to the service command
 	serviceCmd.AddCommand(service.InitCommand)
 	serviceCmd.AddCommand(service.StartCommand)

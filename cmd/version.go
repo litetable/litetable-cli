@@ -25,7 +25,3 @@ var (
 		},
 	}
 )
-
-func init() {
-	rootCmd.AddCommand(versionCommand)
-}

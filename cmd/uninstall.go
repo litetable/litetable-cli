@@ -77,10 +77,6 @@ func uninstallLiteTable() error {
 	return nil
 }
 
-func init() {
-	rootCmd.AddCommand(uninstallCommand)
-}
-
 // removeFromPath attempts to remove the LiteTable bin directory from the PATH in various shell config files
 func removeFromPath(liteTableDir string) error {
 	if runtime.GOOS == "windows" {

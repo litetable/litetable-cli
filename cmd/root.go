@@ -8,7 +8,7 @@ import (
 var (
 	rootCmd = &cobra.Command{
 		Use:     "litetable",
-		Example: "litetable --help",
+		Example: "litetable --help\n\nlitetable service init",
 		Short:   "A CLI tool for interacting with litetable",
 		Long: "Litetable is a high-performance key-value store designed with local" +
 			" development in mind. Proudly written in pure Go.\n",

@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	supportedVersion = "v0.1.1"
+	supportedVersion = "v0.1.2"
 )
 
 var (
@@ -21,7 +21,7 @@ var (
 	autostart   bool
 	serverRepo  = "https://github.com/litetable/litetable-db"
 	serverBin   = "litetable-server"
-	initCommand = &cobra.Command{
+	InitCommand = &cobra.Command{
 		Use:   "init",
 		Short: "Initialize LiteTable database",
 		Long:  "Pull, build, and configure the latest version of LiteTable database server",
@@ -35,8 +35,10 @@ var (
 )
 
 func init() {
-	initCommand.Flags().BoolVarP(&forceInit, "force", "f", false, "Force reinstallation if already installed")
-	initCommand.Flags().BoolVarP(&autostart, "autostart", "a", false, "Configure server to start automatically")
+	InitCommand.Flags().BoolVarP(&forceInit, "force", "f", false,
+		"Force reinstallation if already installed")
+	InitCommand.Flags().BoolVarP(&autostart, "autostart", "a", false,
+		"Configure server to start automatically")
 }
 
 func initLiteTable() error {
@@ -198,8 +200,9 @@ func writeConfigFile(path string) error {
 	content := fmt.Sprintf(`# LiteTable Server Configuration
 port = 9443
 server_binary = %s
+version = %s
 # Add other configuration options as needed
-`, binPath)
+`, binPath, supportedVersion)
 
 	return os.WriteFile(path, []byte(content), 0644)
 }

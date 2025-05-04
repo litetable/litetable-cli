@@ -7,7 +7,7 @@ import (
 
 var serviceCmd = &cobra.Command{
 	Use:   "service",
-	Short: "Manage LiteTable service",
+	Short: "Manage the LiteTable service",
 	Long:  "Commands for managing the LiteTable server",
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
@@ -19,6 +19,7 @@ func init() {
 	rootCmd.AddCommand(serviceCmd)
 
 	// Add subcommands to the service command
+	serviceCmd.AddCommand(service.InitCommand)
 	serviceCmd.AddCommand(service.StartCommand)
 	serviceCmd.AddCommand(service.StopCommand)
 	// serviceCmd.AddCommand(service.CredentialsCmd)

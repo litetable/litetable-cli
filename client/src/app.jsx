@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import AppLayout from "./layout.jsx";
+import AppLayout from "./layout";
 
 function App() {
   return (

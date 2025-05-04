@@ -3,10 +3,13 @@ set -e
 
 # Configuration
 INSTALL_DIR="${HOME}/.litetable"
+LITETABLE_BIN_PATH="${INSTALL_DIR}/bin"
 BIN_DIR="/usr/local/bin"
 GITHUB_REPO="litetable/litetable-cli"
 CLI_NAME="litetable"
 VERSION=${1:-"latest"}  # Use provided version or "latest" if not specified
+REQUIRED_PATH_LINE="export PATH=\"${LITETABLE_BIN_PATH}:\$PATH\""
+
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -87,34 +90,25 @@ fi
 chmod +x "${INSTALL_DIR}/bin/${CLI_NAME}"
 echo -e "${GREEN}✓${NC} Downloaded and made executable"
 
-# Create symlink to make it available in PATH
-echo "Adding to PATH..."
-if [ -w "${BIN_DIR}" ]; then
-  ln -sf "${INSTALL_DIR}/bin/${CLI_NAME}" "${BIN_DIR}/${CLI_NAME}"
-  echo -e "${GREEN}✓${NC} Added to ${BIN_DIR} (in PATH)"
+# Determine appropriate shell config file
+SHELL_FILE=""
+if [ -f "${HOME}/.zshrc" ]; then
+  SHELL_FILE="${HOME}/.zshrc"
+elif [ -f "${HOME}/.bashrc" ]; then
+  SHELL_FILE="${HOME}/.bashrc"
 else
-  echo -e "${YELLOW}Cannot create symlink in ${BIN_DIR} (permission denied)${NC}"
-  echo "To add to PATH manually, run:"
-  echo "  sudo ln -sf ${INSTALL_DIR}/bin/${CLI_NAME} ${BIN_DIR}/${CLI_NAME}"
-
-  # Alternative: add to ~/.bashrc or ~/.zshrc
-  SHELL_FILE=""
-  if [ -f "${HOME}/.zshrc" ]; then
-    SHELL_FILE="${HOME}/.zshrc"
-  elif [ -f "${HOME}/.bashrc" ]; then
-    SHELL_FILE="${HOME}/.bashrc"
-  fi
-
-# Read command for shell file PATH addition
-if [ -n "$SHELL_FILE" ]; then
-  echo -e "Would you like to add ${INSTALL_DIR}/bin to your PATH in ${SHELL_FILE}? (y/n)"
-  read -r response </dev/tty
-  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-    echo "export PATH=\"\$PATH:${INSTALL_DIR}/bin\"" >> "$SHELL_FILE"
-    echo -e "${GREEN}✓${NC} Added to PATH in ${SHELL_FILE}"
-    echo "Please restart your terminal or run: source ${SHELL_FILE}"
-  fi
+  SHELL_FILE="${HOME}/.profile"
 fi
+
+# Only append the line if it's not already present
+if ! grep -Fxq "$REQUIRED_PATH_LINE" "$SHELL_FILE"; then
+  echo "" >> "$SHELL_FILE"
+  echo "# Added by LiteTable CLI installer" >> "$SHELL_FILE"
+  echo "$REQUIRED_PATH_LINE" >> "$SHELL_FILE"
+  echo "✓ Added LiteTable bin to PATH in $SHELL_FILE"
+  echo "→ Run 'source $SHELL_FILE' or restart your terminal to apply the change."
+else
+  echo "✓ PATH export already present in $SHELL_FILE"
 fi
 
 echo -e "${GREEN}LiteTable CLI${NC} ${VERSION_TAG} ${GREEN}installed successfully!${NC}"

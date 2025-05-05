@@ -44,7 +44,7 @@ func updateLiteTable() error {
 
 	// Compare versions
 	if !litetable.IsUpdateAvailable(currentVersion, latestVersion) {
-		fmt.Println("✅  You are already running the latest version!")
+		fmt.Println("\n✅  You are already running the latest version!")
 		return nil
 	}
 
@@ -131,7 +131,7 @@ func updateLiteTable() error {
 		return fmt.Errorf("failed to update config: %w", err)
 	}
 
-	fmt.Printf("✅ Successfully updated to LiteTable version %s!\n", latestVersion)
+	fmt.Printf("✅  Successfully updated to LiteTable version %s!\n", latestVersion)
 	return nil
 }
 

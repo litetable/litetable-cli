@@ -43,7 +43,7 @@ func wipeData() error {
 	reaperFile := filepath.Join(liteTableDir, ".reaper.gc.log")
 
 	tableDir := filepath.Join(liteTableDir, ".table_backup")
-	snapshotDir := filepath.Join(liteTableDir, "snapshots")
+	snapshotDir := filepath.Join(liteTableDir, ".snapshots")
 
 	walDir := filepath.Join(liteTableDir, "wal")
 	walLogFile := filepath.Join(walDir, "wal.log")
@@ -66,7 +66,7 @@ func wipeData() error {
 	if _, err := os.Stat(snapshotDir); err == nil {
 		pathsToRemove = append(pathsToRemove, snapshotDir)
 	}
-	
+
 	if _, err := os.Stat(reaperFile); err == nil {
 		pathsToRemove = append(pathsToRemove, reaperFile)
 	}

@@ -210,6 +210,7 @@ server_address = 127.0.0.1
 debug = false
 garbage_collection_timer = 60
 backup_timer = 80
+snapshot_timer = 20
 max_snapshot_limit = 30
 `, binPath, litetable.ServerVersionKey, version)
 

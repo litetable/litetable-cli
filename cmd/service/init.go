@@ -211,7 +211,7 @@ debug = false
 garbage_collection_timer = 60
 backup_timer = 80
 snapshot_timer = 20
-max_snapshot_limit = 30
+max_snapshot_limit = 5
 `, binPath, litetable.ServerVersionKey, version)
 
 	return os.WriteFile(path, []byte(content), 0644)

@@ -14,9 +14,13 @@ import (
 //go:embed web/*
 var webContent embed.FS
 
+const (
+	dashboardHost = "127.0.0.1"
+	dashboardPort = "7654"
+)
+
 var (
-	dashboardURL = "http:127.0.0.1:8080"
-	Command      = &cobra.Command{
+	Command = &cobra.Command{
 		Use:   "dashboard",
 		Short: "Open LiteTable dashboard in a browser",
 		Long:  "Opens a browser window with the LiteTable dashboard interface",
@@ -37,18 +41,24 @@ func startDashboard() {
 	// Serve static files
 	http.Handle("/", http.FileServer(http.FS(webFS)))
 
+	// Serve the query handler
+	http.Handle("POST /query", queryHandlerFunc())
+
+	addr := fmt.Sprintf("%s:%s", dashboardHost, dashboardPort)
+
 	// Start the server in a goroutine
 	go func() {
-		fmt.Println("Starting dashboard server at http://127.0.0.1:8080")
-		if err := http.ListenAndServe("127.0.0.1:8080", nil); err != nil {
+		// Start the HTTP server
+		fmt.Printf("Starting dashboard server at http://%s\n", addr)
+		if err := http.ListenAndServe(addr, nil); err != nil {
 			fmt.Printf("Failed to start dashboard: %v\n", err)
 			os.Exit(1)
 		}
 	}()
 
 	// Open browser
-	fmt.Printf("Opening browser at %s\n", dashboardURL)
-	openBrowser(dashboardURL)
+	fmt.Printf("Opening browser at %s\n", addr)
+	openBrowser(fmt.Sprintf("http://%s", addr))
 
 	// Keep the server running
 	select {}

@@ -10,6 +10,8 @@ import (
 
 const (
 	ServerVersionKey = "server_version"
+	ServerPort       = "server_port"
+	ServerAddress    = "server_address"
 )
 
 func GetFromConfig(value string) (string, error) {

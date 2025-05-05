@@ -40,7 +40,6 @@ func init() {
 
 func initLiteTable() error {
 	fmt.Println("🚀 Welcome to LiteTable Setup!")
-	fmt.Println("Let's get your database ready to use.")
 
 	// Get LiteTable directory
 	liteTableDir, err := dir.GetLitetableDir()
@@ -65,7 +64,7 @@ func initLiteTable() error {
 			}
 			response = strings.ToLower(strings.TrimSpace(response))
 			if response != "y" && response != "yes" {
-				fmt.Println("Installation canceled. Your existing setup remains unchanged.")
+				fmt.Println("\nInstallation canceled. Your existing setup remains unchanged.")
 				return nil
 			}
 		}
@@ -81,13 +80,14 @@ func initLiteTable() error {
 	if !checkGitInstalled() {
 		return fmt.Errorf("git is not installed. Please install Git (https://git-scm.com/downloads) and try again")
 	}
-	fmt.Println("✅ Git installation detected\n📋 Checking prerequisites...")
+	fmt.Println("\n✅  Git installation detected\n\n📋 Checking prerequisites...")
 
 	if !checkGoInstalled() {
-		return fmt.Errorf("go is not installed. Please install Go (https://go.dev/doc/install) and try again")
+		return fmt.Errorf("\ngo is not installed. Please install Go (https://go." +
+			"dev/doc/install) and try again")
 	}
 
-	fmt.Println("✅ Go installation detected")
+	fmt.Println("\n✅  Go installation detected")
 
 	// Get latest version tag
 	fmt.Println("\n🔍 Determining latest version...")
@@ -95,10 +95,10 @@ func initLiteTable() error {
 	if err != nil {
 		return fmt.Errorf("failed to determine latest version: %w", err)
 	}
-	fmt.Printf("✅ Latest version: %s\n", latestVersion)
+	fmt.Printf("\n✅  Latest version: %s\n", latestVersion)
 
 	// Clone/update repo and build
-	fmt.Println("\n📥 Downloading latest LiteTable server...")
+	fmt.Println("\n📥  Downloading latest LiteTable server...")
 	tempDir, err := os.MkdirTemp("", "litetable-build")
 	if err != nil {
 		return fmt.Errorf("failed to create temporary directory: %w", err)
@@ -110,7 +110,7 @@ func initLiteTable() error {
 	}(tempDir)
 
 	// Clone the repository
-	fmt.Printf("\n📥 Cloning LiteTable server repository (version %s)...\n", latestVersion)
+	fmt.Printf("\n📥  Cloning LiteTable server repository (version %s)...\n", latestVersion)
 	gitCloneCmd := exec.Command("git", "-c", "advice.detachedHead=false", "clone", "--depth", "1", "--branch", latestVersion, serverRepo, tempDir)
 
 	gitCloneCmd.Stdout = os.Stdout
@@ -120,8 +120,7 @@ func initLiteTable() error {
 	}
 
 	// Build the server
-	fmt.Println("\n🔨 Building server...")
-	fmt.Printf("🎯 Building for %s/%s\n", runtime.GOOS, runtime.GOARCH)
+	fmt.Printf("\n🎯 Building for %s/%s\n", runtime.GOOS, runtime.GOARCH)
 
 	buildCmd := exec.Command("go", "build", "-o", binPath)
 	// Set build environment variables to ensure correct OS/architecture targeting
@@ -147,7 +146,7 @@ func initLiteTable() error {
 	certPath := filepath.Join(certDir, serverCertName)
 
 	if _, err := os.Stat(certPath); os.IsNotExist(err) {
-		fmt.Println("\n🔐 Generating TLS certificates...")
+		fmt.Println("\n🔐  Generating TLS certificates...")
 		if err := generateCredentials(); err != nil {
 			return fmt.Errorf("failed to generate credentials: %w", err)
 		}
@@ -155,7 +154,7 @@ func initLiteTable() error {
 
 	// Setup autostart if requested
 	if autostart {
-		fmt.Println("\n⚙️ Setting up autostart...")
+		fmt.Println("\n⚙️  Setting up autostart...")
 		if err := setupAutostart(binPath); err != nil {
 			return fmt.Errorf("failed to configure autostart: %w", err)
 		}
@@ -169,7 +168,7 @@ func initLiteTable() error {
 
 	// Success message
 	fmt.Println("\n✅  LiteTable setup complete!")
-	fmt.Printf("Server version %s installed at: %s\n", latestVersion, binPath)
+	fmt.Printf("\nServer version %s installed at: %s\n", latestVersion, binPath)
 	fmt.Println("\nTo start the server run:")
 	fmt.Println("  litetable service start")
 
@@ -198,11 +197,16 @@ func writeConfigFile(path string, version string) error {
 		binPath += ".exe"
 	}
 
-	content := fmt.Sprintf(`# LiteTable Server Configuration
+	content := fmt.Sprintf(`# DO NOT CHANGE THIS FILE MANUALLY
 server_binary = %s
-port = 9443
 %s = %s
-# Add other configuration options as needed
+
+########################################
+#### LiteTable Server Configuration ####
+########################################
+
+server_port = 9443
+server_address = 127.0.0.1
 `, binPath, litetable.ServerVersionKey, version)
 
 	return os.WriteFile(path, []byte(content), 0644)

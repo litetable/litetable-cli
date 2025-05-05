@@ -4,6 +4,7 @@ import (
 	"crypto/x509"
 	"fmt"
 	"github.com/litetable/litetable-cli/internal/dir"
+	"github.com/litetable/litetable-cli/internal/litetable"
 	"net"
 	"os"
 	"path/filepath"
@@ -41,8 +42,11 @@ func Dial() (net.Conn, error) {
 	// 	ServerName:         "localhost",
 	// }
 
+	address, _ := litetable.GetFromConfig(litetable.ServerAddress)
+	port, _ := litetable.GetFromConfig(litetable.ServerPort)
+
 	// Connect to the server using TLS
-	conn, err := net.Dial("tcp", ":9443")
+	conn, err := net.Dial("tcp", fmt.Sprintf("%s:%s", address, port))
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to server: %w", err)
 	}

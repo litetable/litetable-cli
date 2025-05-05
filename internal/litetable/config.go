@@ -12,6 +12,7 @@ const (
 	ServerVersionKey = "server_version"
 	ServerPort       = "server_port"
 	ServerAddress    = "server_address"
+	ServerDebug      = "debug"
 )
 
 func GetFromConfig(value string) (string, error) {

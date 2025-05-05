@@ -207,6 +207,10 @@ server_binary = %s
 
 server_port = 9443
 server_address = 127.0.0.1
+debug = false
+garbage_collection_timer = 60
+backup_timer = 80
+max_snapshot_limit = 30
 `, binPath, litetable.ServerVersionKey, version)
 
 	return os.WriteFile(path, []byte(content), 0644)

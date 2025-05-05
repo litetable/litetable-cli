@@ -16,6 +16,11 @@ var (
 	allowedConfigurations = []string{
 		"server_port",
 		"server_address",
+		"garbage_collection_timer",
+		"backup_timer",
+		"max_snapshot_limit",
+		"debug",
+		"cloud_environment",
 	}
 )
 

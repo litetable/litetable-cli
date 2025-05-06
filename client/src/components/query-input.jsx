@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {transformToTableData, unwrapAndDecodeData} from '@/utils.js';
+import { unwrapAndDecodeData } from "@/utils.js";
 
 // const keywords = ["READ", "WRITE", "DELETE", "family", "key", "qualifier", "value", "latest"];
 // const operations = ["READ", "WRITE", "DELETE"];

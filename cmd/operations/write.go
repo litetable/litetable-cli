@@ -2,11 +2,12 @@ package operations
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/litetable/litetable-cli/cmd/service"
 	"github.com/litetable/litetable-cli/internal/litetable"
 	"github.com/spf13/cobra"
-	"net"
+	"io"
 	"net/url"
 	"strconv"
 	"time"
@@ -72,12 +73,7 @@ func writeData() error {
 		return fmt.Errorf("failed to dial server: %w", err)
 	}
 
-	defer func(conn net.Conn) {
-		closeErr := conn.Close()
-		if closeErr != nil {
-			fmt.Println("failed to close connection: %w", closeErr.Error())
-		}
-	}(conn)
+	defer conn.Close()
 
 	// Create the WRITE command with all the qualifier/value pairs
 	cmd := fmt.Sprintf("WRITE key=%s family=%s", writeKey, writeFamily)
@@ -98,21 +94,62 @@ func writeData() error {
 		return fmt.Errorf("failed to send data: %w", err)
 	}
 
-	// Read response
-	buffer := make([]byte, 1024)
-	n, err := conn.Read(buffer)
-	if err != nil {
-		return fmt.Errorf("failed to read response: %w", err)
+	// Read response using the robust approach for large responses
+	var fullResponse []byte
+	buffer := make([]byte, 4096)
+
+	// Use a reasonable timeout for the entire read operation
+	timeout := time.Now().Add(10 * time.Second)
+	if err := conn.SetReadDeadline(timeout); err != nil {
+		return fmt.Errorf("failed to set read deadline: %w", err)
 	}
 
-	var payload litetable.Row
-	if err := json.Unmarshal(buffer[:n], &payload); err != nil {
-		return fmt.Errorf("failed to unmarshal response: %w\nRaw: %s",
-			err, string(buffer[:n]))
+	for {
+		n, err := conn.Read(buffer)
+		if n > 0 {
+			fullResponse = append(fullResponse, buffer[:n]...)
+
+			// Check if we have a complete JSON object
+			if len(fullResponse) > 0 && IsValidJSON(fullResponse) {
+				break
+			}
+		}
+
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+			return fmt.Errorf("error reading response: %w", err)
+		}
+
+		// Extend deadline for each successful read
+		if err := conn.SetReadDeadline(time.Now().Add(2 * time.Second)); err != nil {
+			return fmt.Errorf("failed to extend read deadline: %w", err)
+		}
 	}
+
 	elapsed := time.Since(now)
 	elapsedMs := float64(elapsed.Nanoseconds()) / 1_000_000.0
-	fmt.Printf("Roundtrip in %.2fms\n\n%s\n", elapsedMs, payload.PrettyPrint())
-	return nil
 
+	// Parse as a map of rows
+	var rows map[string]litetable.Row
+	if err := json.Unmarshal(fullResponse, &rows); err != nil {
+		// If we can't parse as JSON, return the raw response
+		return fmt.Errorf("%s", string(fullResponse))
+	}
+
+	// Print each row with a separator
+	first := true
+	for key, row := range rows {
+		if !first {
+			fmt.Println("--------------------")
+		}
+		first = false
+		fmt.Printf("Key: %s\n%s\n", key, row.PrettyPrint())
+	}
+
+	fmt.Printf("Response size: %d bytes\n", len(fullResponse))
+	fmt.Printf("Operation duration: %.2fms\n", elapsedMs)
+
+	return nil
 }

@@ -75,22 +75,17 @@ func readData() error {
 
 	now := time.Now()
 
-	// Track which mode we're using to determine how to parse the response
-	isMultiRowQuery := false
-
 	// Build the READ command based on which selector is provided
 	var command string
 	if readKey != "" {
 		command = fmt.Sprintf("READ key=%s", readKey)
 	} else if readKeyPrefix != "" {
 		command = fmt.Sprintf("READ prefix=%s", readKeyPrefix)
-		isMultiRowQuery = true
 	} else if readRegex != "" {
 		// Create a properly formatted regex pattern that escapes special characters
 		// and wraps the user input with ".*" for substring matching
 		formattedRegex := fmt.Sprintf(".*%s.*", readRegex)
 		command = fmt.Sprintf("READ regex=%s", formattedRegex)
-		isMultiRowQuery = true
 	}
 
 	if readFamily != "" {
@@ -144,42 +139,28 @@ func readData() error {
 		}
 	}
 
-	// Print raw response size for debugging
-	fmt.Printf("Received %d bytes\n", len(fullResponse))
-
 	elapsed := time.Since(now)
 	elapsedMs := float64(elapsed.Nanoseconds()) / 1_000_000.0
 
 	// Parse the response based on which query mode we're using
-	if isMultiRowQuery {
-		// Parse as an array of rows
-		var rows map[string]litetable.Row
-		if err := json.Unmarshal(fullResponse, &rows); err != nil {
-			return fmt.Errorf("%s", string(fullResponse))
-		}
-
-		fmt.Printf("Found %d matching rows\n", len(rows))
-
-		// Print each row with a separator
-		first := true
-		for key, row := range rows {
-			if !first {
-				fmt.Println("--------------------")
-			}
-			first = false
-			fmt.Printf("Key: %s\n%s\n", key, row.PrettyPrint())
-		}
-	} else {
-		// Parse as a single row
-		var row litetable.Row
-		if err := json.Unmarshal(fullResponse, &row); err != nil {
-			fmt.Printf("%s", string(fullResponse))
-			return nil
-		}
-
-		fmt.Printf("%s\n", row.PrettyPrint())
+	// Parse as an array of rows
+	var rows map[string]litetable.Row
+	if err := json.Unmarshal(fullResponse, &rows); err != nil {
+		return fmt.Errorf("%s", string(fullResponse))
 	}
-	fmt.Printf("Roundtrip in %.2fms\n", elapsedMs)
+
+	// Print each row with a separator
+	first := true
+	for key, row := range rows {
+		if !first {
+			fmt.Println("--------------------")
+		}
+		first = false
+		fmt.Printf("Key: %s\n%s\n", key, row.PrettyPrint())
+	}
+	fmt.Printf("Row results: %d\n", len(rows))
+	fmt.Printf("Response size: %d bytes\n", len(fullResponse))
+	fmt.Printf("Query duration: %.2fms\n", elapsedMs)
 
 	return nil
 }

@@ -1,13 +1,12 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
-
-import process from "node:process";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
 
+  mode: "production",
   // Set the base directory for the build
   base: "./",
 
@@ -20,7 +19,7 @@ export default defineConfig({
     assetsDir: "",
 
     // For smaller builds, disable source maps in production
-    sourcemap: process.env.NODE_ENV !== "production",
+    sourcemap: false,
 
     // Configure the output format
     rollupOptions: {
@@ -43,7 +42,10 @@ export default defineConfig({
 
   // Server configuration for development
   server: {
-    port: 3000,
-    open: true,
+    proxy: {
+      "/query": {
+        target: "http://127.0.0.1:7654",
+      },
+    },
   },
 });

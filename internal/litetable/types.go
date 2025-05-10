@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"time"
 )
 
 const (
@@ -15,10 +14,9 @@ const (
 
 // TimestampedValue stores a value with its timestamp
 type TimestampedValue struct {
-	Value     []byte    `json:"-"`         // Internal binary representation
-	RawValue  string    `json:"value"`     // Base64 encoded value from JSON
-	Timestamp time.Time `json:"-"`         // Parsed timestamp
-	RawTime   string    `json:"timestamp"` // String timestamp from JSON
+	Value     []byte `json:"-"`     // Internal binary representation
+	RawValue  string `json:"value"` // Base64 encoded value from JSON
+	Timestamp int64  `json:"-"`     // Parsed timestamp
 }
 
 // UnmarshalJSON implements custom unmarshalling for TimestampedValue
@@ -26,7 +24,7 @@ func (tv *TimestampedValue) UnmarshalJSON(data []byte) error {
 	// Temporary struct for parsing
 	temp := struct {
 		Value     string `json:"value"`
-		Timestamp string `json:"timestamp"`
+		Timestamp int64  `json:"timestamp"`
 	}{}
 
 	if err := json.Unmarshal(data, &temp); err != nil {
@@ -35,7 +33,7 @@ func (tv *TimestampedValue) UnmarshalJSON(data []byte) error {
 
 	// Store raw values
 	tv.RawValue = temp.Value
-	tv.RawTime = temp.Timestamp
+	tv.Timestamp = temp.Timestamp
 
 	// Decode base64 value
 	decoded, err := base64.StdEncoding.DecodeString(temp.Value)
@@ -45,11 +43,10 @@ func (tv *TimestampedValue) UnmarshalJSON(data []byte) error {
 	tv.Value = decoded
 
 	// Parse timestamp
-	timestamp, err := time.Parse(time.RFC3339Nano, temp.Timestamp)
-	if err != nil {
-		return fmt.Errorf("invalid timestamp format: %w", err)
-	}
-	tv.Timestamp = timestamp
+	// timestamp, err := time.Parse(time.RFC3339Nano, temp.Timestamp)
+	// if err != nil {
+	// 	return fmt.Errorf("invalid timestamp format: %w", err)
+	// }
 
 	return nil
 }
@@ -80,8 +77,8 @@ func (r *Row) PrettyPrint() string {
 			result += fmt.Sprintf("  qualifier: %s\n", qualifier)
 
 			for i, v := range values {
-				result += fmt.Sprintf("    value %d: %s (timestamp: %s)\n",
-					i+1, v.GetString(), v.RawTime)
+				result += fmt.Sprintf("    value %d: %s, timestamp: %d\n",
+					i+1, v.GetString(), v.Timestamp)
 			}
 		}
 	}

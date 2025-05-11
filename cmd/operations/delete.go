@@ -1,11 +1,10 @@
 package operations
 
 import (
-	"errors"
+	"context"
 	"fmt"
-	"github.com/litetable/litetable-cli/cmd/service"
+	"github.com/litetable/litetable-cli/internal/server"
 	"github.com/spf13/cobra"
-	"io"
 	"time"
 )
 
@@ -15,7 +14,7 @@ var (
 	deleteFamily    string
 	deleteQualifier []string
 	deleteTTL       int64
-	deleteFrom      string
+	deleteFrom      int64
 
 	DeleteCmd = &cobra.Command{
 		Use:   "delete",
@@ -37,90 +36,46 @@ func init() {
 	DeleteCmd.Flags().StringVarP(&deleteFamily, "family", "f", "", "Column family to delete")
 	DeleteCmd.Flags().StringArrayVarP(&deleteQualifier, "qualifier", "q", []string{}, "Qualifiers to delete (can be specified multiple times)")
 	DeleteCmd.Flags().Int64Var(&deleteTTL, "ttl", 0, "Time-to-live in seconds for tombstone entries")
-	DeleteCmd.Flags().StringVar(&deleteFrom, "from", "", "Starting position for deletion in the map")
+	DeleteCmd.Flags().Int64Var(&deleteFrom, "from", 0, "Starting position for deletion in the map")
 
 	// Mark required flags
 	_ = DeleteCmd.MarkFlagRequired("key")
 }
 
 func deleteData() error {
-	conn, err := service.Dial()
-	if err != nil {
-		return fmt.Errorf("failed to dial server: %w", err)
-	}
-	defer conn.Close()
-
 	now := time.Now()
 
-	// Build the DELETE command
-	command := fmt.Sprintf("DELETE key=%s", deleteKey)
-
-	if deleteFamily != "" {
-		command += fmt.Sprintf(" family=%s", deleteFamily)
-	}
+	var qualifiers []string
 
 	for _, q := range deleteQualifier {
-		command += fmt.Sprintf(" qualifier=%s", q)
+		qualifiers = append(qualifiers, q)
 	}
 
-	// Add the optional from parameter if provided
-	if deleteFrom != "" {
-		command += fmt.Sprintf(" timestamp=%s", deleteFrom)
+	opts := &server.DeleteParams{
+		Key:        deleteKey,
+		Family:     deleteFamily,
+		Qualifiers: deleteQualifier,
 	}
-
-	// Add the optional TTL parameter if provided
+	if deleteFrom > 0 {
+		opts.From = deleteFrom
+	}
 	if deleteTTL > 0 {
-		command += fmt.Sprintf(" ttl=%d", deleteTTL)
+		opts.TTL = int32(deleteTTL)
 	}
 
-	// Send the command
-	if _, err = conn.Write([]byte(command)); err != nil {
-		return fmt.Errorf("failed to send delete command: %w", err)
+	client, err := server.NewClient()
+	if err != nil {
+		return fmt.Errorf("failed to create server client: %w", err)
 	}
 
-	// Read response using a more robust approach
-	var fullResponse []byte
-	buffer := make([]byte, 4096)
+	defer func(client *server.GrpcClient) {
+		_ = client.Close()
+	}(client)
 
-	// Use a reasonable timeout for the entire read operation
-	timeout := time.Now().Add(10 * time.Second)
-	if err := conn.SetReadDeadline(timeout); err != nil {
-		return fmt.Errorf("failed to set read deadline: %w", err)
+	if err = client.Delete(context.Background(), opts); err != nil {
+		return fmt.Errorf("failed to delete data: %w", err)
 	}
 
-	for {
-		n, err := conn.Read(buffer)
-		if n > 0 {
-			fullResponse = append(fullResponse, buffer[:n]...)
-
-			// Check if we have a complete JSON object
-			if len(fullResponse) > 0 && IsValidJSON(fullResponse) {
-				break
-			}
-		}
-
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				break
-			}
-			return fmt.Errorf("error reading response: %w", err)
-		}
-
-		// Extend deadline for each successful read
-		if err := conn.SetReadDeadline(time.Now().Add(2 * time.Second)); err != nil {
-			return fmt.Errorf("failed to extend read deadline: %w", err)
-		}
-	}
-
-	// Print raw response size for debugging
-	fmt.Printf("Received %d bytes\n", len(fullResponse))
-
-	// Parse the response
-	elapsed := time.Since(now)
-	elapsedMs := float64(elapsed.Nanoseconds()) / 1_000_000.0
-	fmt.Printf("Deletion completed in %.2fms\n", elapsedMs)
-
-	// Pretty print the response
-	fmt.Printf("Result: %v\n", string(fullResponse))
+	fmt.Println("Delete successful in", time.Since(now))
 	return nil
 }

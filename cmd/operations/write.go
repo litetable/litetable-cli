@@ -3,7 +3,6 @@ package operations
 import (
 	"context"
 	"fmt"
-	"github.com/litetable/litetable-cli/cmd/service"
 	"github.com/litetable/litetable-cli/internal/server"
 	"github.com/spf13/cobra"
 	"net/url"
@@ -65,13 +64,6 @@ func init() {
 }
 
 func writeData() error {
-	conn, err := service.Dial()
-	if err != nil {
-		return fmt.Errorf("failed to dial server: %w", err)
-	}
-
-	defer conn.Close()
-
 	var quals []server.Qualifier
 	// Create the WRITE command with all the qualifier/value pairs
 	for i := 0; i < len(writeQuals); i++ {

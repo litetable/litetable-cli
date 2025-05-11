@@ -3,6 +3,7 @@ package operations
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/litetable/litetable-cli/internal/server"
 	"github.com/spf13/cobra"
@@ -106,6 +107,10 @@ func readData() error {
 	}
 	data, err := client.Read(context.Background(), &opts)
 	if err != nil {
+		if errors.Is(err, server.ErrRowNotFound) {
+			fmt.Println("row not found")
+			return nil
+		}
 		return fmt.Errorf("failed to read data: %w", err)
 	}
 

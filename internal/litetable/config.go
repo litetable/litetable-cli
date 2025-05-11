@@ -13,6 +13,7 @@ const (
 	ServerPort       = "server_port"
 	ServerAddress    = "server_address"
 	ServerDebug      = "debug"
+	ServerRPCPort    = "server_rpc_port"
 )
 
 func GetFromConfig(value string) (string, error) {

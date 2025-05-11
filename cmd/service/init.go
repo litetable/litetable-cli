@@ -206,12 +206,18 @@ server_binary = %s
 ########################################
 
 server_port = 9443
+server_rpc_port = 49786
 server_address = 127.0.0.1
-debug = false
+debug = true
 garbage_collection_timer = 60
 backup_timer = 80
 snapshot_timer = 20
 max_snapshot_limit = 5
+
+## MCP Server settings
+mcp_server_enabled = false
+mcp_server_address = 127.0.0.1
+mcp_server_port = 49787
 `, binPath, litetable.ServerVersionKey, version)
 
 	return os.WriteFile(path, []byte(content), 0644)

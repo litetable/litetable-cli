@@ -1,15 +1,12 @@
 package operations
 
 import (
-	"encoding/json"
-	"errors"
+	"context"
 	"fmt"
 	"github.com/litetable/litetable-cli/cmd/service"
-	"github.com/litetable/litetable-cli/internal/litetable"
+	"github.com/litetable/litetable-cli/internal/server"
 	"github.com/spf13/cobra"
-	"io"
 	"net/url"
-	"strconv"
 	"time"
 )
 
@@ -75,81 +72,50 @@ func writeData() error {
 
 	defer conn.Close()
 
+	var quals []server.Qualifier
 	// Create the WRITE command with all the qualifier/value pairs
-	cmd := fmt.Sprintf("WRITE key=%s family=%s", writeKey, writeFamily)
 	for i := 0; i < len(writeQuals); i++ {
 		// URL encode the value to properly handle spaces and special characters
 		encodedValue := url.QueryEscape(writeValues[i])
-		cmd += fmt.Sprintf(" qualifier=%s value=%s", writeQuals[i], encodedValue)
-	}
-
-	if writeTTL > 0 {
-		cmd += fmt.Sprintf(" ttl=%s", strconv.FormatInt(writeTTL, 10))
+		quals = append(quals, server.Qualifier{
+			Name:  writeQuals[i],
+			Value: encodedValue,
+		})
 	}
 
 	now := time.Now()
-	// Send the write command
-	_, err = conn.Write([]byte(cmd))
+
+	client, err := server.NewClient()
 	if err != nil {
-		return fmt.Errorf("failed to send data: %w", err)
+		return fmt.Errorf("failed to create server client: %w", err)
 	}
 
-	// Read response using the robust approach for large responses
-	var fullResponse []byte
-	buffer := make([]byte, 4096)
+	defer client.Close()
 
-	// Use a reasonable timeout for the entire read operation
-	timeout := time.Now().Add(10 * time.Second)
-	if err := conn.SetReadDeadline(timeout); err != nil {
-		return fmt.Errorf("failed to set read deadline: %w", err)
+	// TODO: fix the ttl stuff after server
+	opts := server.WriteParams{
+		Key:        writeKey,
+		Family:     writeFamily,
+		Qualifiers: quals,
+	}
+	data, err := client.Write(context.Background(), &opts)
+	if err != nil {
+		return fmt.Errorf("failed to write data: %w", err)
 	}
 
-	for {
-		n, err := conn.Read(buffer)
-		if n > 0 {
-			fullResponse = append(fullResponse, buffer[:n]...)
-
-			// Check if we have a complete JSON object
-			if len(fullResponse) > 0 && IsValidJSON(fullResponse) {
-				break
-			}
-		}
-
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				break
-			}
-			return fmt.Errorf("error reading response: %w", err)
-		}
-
-		// Extend deadline for each successful read
-		if err := conn.SetReadDeadline(time.Now().Add(2 * time.Second)); err != nil {
-			return fmt.Errorf("failed to extend read deadline: %w", err)
-		}
-	}
-
-	elapsed := time.Since(now)
-	elapsedMs := float64(elapsed.Nanoseconds()) / 1_000_000.0
-
-	// Parse as a map of rows
-	var rows map[string]litetable.Row
-	if err := json.Unmarshal(fullResponse, &rows); err != nil {
-		// If we can't parse as JSON, return the raw response
-		return fmt.Errorf("%s", string(fullResponse))
-	}
-
-	// Print each row with a separator
 	first := true
-	for key, row := range rows {
+	for key, row := range data {
 		if !first {
 			fmt.Println("--------------------")
+			fmt.Println()
+		} else {
+			fmt.Println()
 		}
 		first = false
 		fmt.Printf("Key: %s\n%s\n", key, row.PrettyPrint())
 	}
-
-	fmt.Printf("Response size: %d bytes\n", len(fullResponse))
-	fmt.Printf("Operation duration: %.2fms\n", elapsedMs)
+	fmt.Printf("Row results: %d\n", len(data))
+	fmt.Printf("Query duration: %s\n", time.Since(now))
 
 	return nil
 }

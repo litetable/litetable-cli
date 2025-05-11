@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"net/url"
 )
 
 const (
@@ -24,7 +25,7 @@ func (tv *TimestampedValue) UnmarshalJSON(data []byte) error {
 	// Temporary struct for parsing
 	temp := struct {
 		Value     string `json:"value"`
-		Timestamp int64  `json:"timestamp"`
+		Timestamp int64  `json:"timestamp_unix"`
 	}{}
 
 	if err := json.Unmarshal(data, &temp); err != nil {
@@ -77,8 +78,16 @@ func (r *Row) PrettyPrint() string {
 			result += fmt.Sprintf("  qualifier: %s\n", qualifier)
 
 			for i, v := range values {
+				// Try to URL-decode the value
+				rawValue := v.GetString()
+				decodedValue, err := url.QueryUnescape(rawValue)
+				if err != nil {
+					// If it fails to decode, use the original value
+					decodedValue = rawValue
+				}
+
 				result += fmt.Sprintf("    value %d: %s, timestamp: %d\n",
-					i+1, v.GetString(), v.Timestamp)
+					i+1, decodedValue, v.Timestamp)
 			}
 		}
 	}

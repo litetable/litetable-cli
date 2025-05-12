@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/litetable/litetable-cli/internal/litetable"
 	"github.com/litetable/litetable-db/pkg/proto"
 )
@@ -27,7 +26,6 @@ type ReadParams struct {
 // Read will make an RPC to the server to read a row key. It should return example one row key with
 // any qualifiers specified in the query
 func (g *GrpcClient) Read(ctx context.Context, p *ReadParams) (map[string]*litetable.Row, error) {
-	fmt.Println("sending request to server", g.rpcConnString)
 	data, err := g.client.Read(ctx, &proto.ReadRequest{
 		RowKey:     p.Key,
 		QueryType:  p.QueryType,
@@ -112,7 +110,7 @@ func (g *GrpcClient) CreateFamilies(ctx context.Context, p *CreateFamilyParams) 
 	params := &proto.CreateFamilyRequest{
 		Family: p.Families,
 	}
-	
+
 	_, err := g.client.CreateFamily(ctx, params)
 	if err != nil {
 		return err

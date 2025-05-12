@@ -141,17 +141,6 @@ func initLiteTable() error {
 		}
 	}
 
-	// Generate TLS certificates if they don't exist
-	certDir := liteTableDir
-	certPath := filepath.Join(certDir, serverCertName)
-
-	if _, err := os.Stat(certPath); os.IsNotExist(err) {
-		fmt.Println("\n🔐  Generating TLS certificates...")
-		if err := generateCredentials(); err != nil {
-			return fmt.Errorf("failed to generate credentials: %w", err)
-		}
-	}
-
 	// Setup autostart if requested
 	if autostart {
 		fmt.Println("\n⚙️  Setting up autostart...")

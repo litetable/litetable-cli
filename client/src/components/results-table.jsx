@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Fragment } from "react"
 import { format } from "date-fns"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -69,8 +69,8 @@ export default function ResultsTable({ data }) {
 							const families = Object.keys(row.cols)
 
 							return (
-								<>
-									<TableRow key={index} className="hover:bg-muted/50 cursor-pointer" onClick={() => toggleRow(index)}>
+								<Fragment key={index}>
+									<TableRow className="hover:bg-muted/50 cursor-pointer" onClick={() => toggleRow(index)}>
 										<TableCell className="p-2 text-center">
 											{isExpanded ? (
 												<ChevronDown className="h-4 w-4 inline" />
@@ -99,7 +99,7 @@ export default function ResultsTable({ data }) {
 									</TableRow>
 
 									{isExpanded && (
-										<TableRow className="bg-muted/20">
+										<TableRow key={`expanded-${index}`} className="bg-muted/20">
 											<TableCell colSpan={2 + qualifierColumns.length} className="p-0">
 												<div className="p-4">
 													<h4 className="text-sm font-medium mb-2">Column Families</h4>
@@ -181,7 +181,7 @@ export default function ResultsTable({ data }) {
 											</TableCell>
 										</TableRow>
 									)}
-								</>
+								</Fragment>
 							)
 						})}
 					</TableBody>

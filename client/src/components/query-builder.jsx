@@ -20,6 +20,7 @@ import { toast } from "sonner"
 
 import ResultsTable from "./results-table"
 import {unwrapAndDecodeData} from '@/utils.js';
+import JsonUpload from '@/components/json-upload.jsx';
 
 export default function QueryBuilder() {
 	const [operation, setOperation] = useState("READ")
@@ -56,11 +57,14 @@ export default function QueryBuilder() {
 		setIsLoading(true);
 		setIsOpen("results");
 
+		const parsedLatest = parseInt(latest, 10);
+
 		const payload = {
 			type: operation,
 			readType: filterType,
 			key: filterValue || "",
 			family: columnFamily || "",
+			latest: operation === "READ" ? (isNaN(parsedLatest) ? 1 : parsedLatest) : 0,
 			qualifiers: qualifiers
 				.filter((q) => q.qualifier) // Only include qualifiers with a name
 				.map((q) => {
@@ -146,8 +150,8 @@ export default function QueryBuilder() {
 
 
 	return (
-		<div className="space-y-4 mb-4">
-			<Accordion type="single" value={isOpen} onValueChange={setIsOpen} collapsible className="w-full">
+		<div className="mb-4">
+			<Accordion type="single" value={isOpen} onValueChange={setIsOpen} collapsible className="w-full space-y-4">
 				<AccordionItem value="builder" className="border rounded-lg">
 					<AccordionTrigger className="px-4 py-3 hover:no-underline">
 						<span className="text-base font-medium">Query Builder</span>
@@ -343,6 +347,15 @@ export default function QueryBuilder() {
 						) : (
 							<div className="py-4 text-center text-muted-foreground">Generate a query to see results</div>
 						)}
+					</AccordionContent>
+				</AccordionItem>
+
+				<AccordionItem value="jsonUpload" className="border rounded-lg">
+					<AccordionTrigger className="px-4 py-3 hover:no-underline">
+						<span className="text-base font-medium">JSON Upload</span>
+					</AccordionTrigger>
+					<AccordionContent className="px-6 pb-6">
+						<JsonUpload handleSubmit={handleSubmit} />
 					</AccordionContent>
 				</AccordionItem>
 			</Accordion>

@@ -171,6 +171,7 @@ func (h *handler) handleReadQuery(ctx context.Context, p *payload) (any, error) 
 		QueryType:  server.Read,
 		Family:     p.Family,
 		Qualifiers: []string{},
+		Latest:     int32(p.Latest),
 	}
 
 	if p.ReadType == "prefix" {
@@ -206,6 +207,5 @@ func (h *handler) handleWriteQuery(ctx context.Context, p *payload) (any, error)
 		Qualifiers: p.Qualifiers,
 	}
 
-	fmt.Println(params)
 	return h.server.Write(ctx, params)
 }

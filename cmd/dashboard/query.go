@@ -1,36 +1,46 @@
 package dashboard
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net"
+	litetable2 "github.com/litetable/litetable-cli/internal/litetable"
+	"github.com/litetable/litetable-cli/internal/server"
 	"net/http"
-	"time"
-
-	"github.com/litetable/litetable-cli/cmd/service"
+	"strings"
 )
 
-func queryHandlerFunc() http.HandlerFunc {
-	return queryHandler
+type litetable interface {
+	CreateFamilies(ctx context.Context, p *server.CreateFamilyParams) error
+	Read(ctx context.Context, p *server.ReadParams) (map[string]*litetable2.Row, error)
+	Write(ctx context.Context, p *server.WriteParams) (map[string]*litetable2.Row, error)
+	Delete(ctx context.Context, p *server.DeleteParams) error
 }
+
+const (
+	queryCreate = "CREATE"
+	queryRead   = "READ"
+	queryWrite  = "WRITE"
+	queryDelete = "DELETE"
+)
 
 type payload struct {
-	Query string `json:"query"`
+	Type       string             `json:"type"`
+	ReadType   string             `json:"readType"`
+	Key        string             `json:"key"`
+	Family     string             `json:"family"`
+	Qualifiers []server.Qualifier `json:"qualifiers"`
+	Latest     int                `json:"latest"`
+	Families   []string           `json:"families"`
 }
 
-// queryHandler only handles the POST method to pass the query to the UI. All the parsing
-// is done in the UI.
-func queryHandler(w http.ResponseWriter, r *http.Request) {
-	// Only accept POST requests
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		_ = json.NewEncoder(w).Encode(map[string]string{
-			"error": "Only POST method is supported",
-		})
-		return
-	}
+type handler struct {
+	server litetable
+}
 
+func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// Set response headers
+	w.Header().Set("Content-Type", "application/json")
 	// Decode the JSON payload
 	var p payload
 	decoder := json.NewDecoder(r.Body)
@@ -42,93 +52,160 @@ func queryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if query is empty
-	if p.Query == "" {
+	// Check if the query type is empty
+	if p.Type == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(map[string]string{
-			"error": "Query string cannot be empty",
+			"error": "Query type must be specified",
 		})
 		return
 	}
 
-	// Connect to the litetable server
-	conn, err := service.Dial()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		_ = json.NewEncoder(w).Encode(map[string]string{
-			"error": fmt.Sprintf("Failed to dial server: %v", err),
-		})
-		return
-	}
-	defer func(conn net.Conn) {
-		_ = conn.Close()
-	}(conn)
-
-	// Set a reasonable timeout
-	timeout := time.Now().Add(10 * time.Second)
-	if err := conn.SetReadDeadline(timeout); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		_ = json.NewEncoder(w).Encode(map[string]string{
-			"error": fmt.Sprintf("Failed to set read deadline: %v", err),
-		})
-		return
-	}
-
-	// Send the query to the server
-	if _, err = conn.Write([]byte(p.Query)); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		_ = json.NewEncoder(w).Encode(map[string]string{
-			"error": fmt.Sprintf("Failed to send query to server: %v", err),
-		})
-		return
-	}
-
-	// Read the response
-	var fullResponse []byte
-	buffer := make([]byte, 4096)
-
-	for {
-		n, err := conn.Read(buffer)
-		if n > 0 {
-			fullResponse = append(fullResponse, buffer[:n]...)
-
-			// Check if we have a complete JSON object
-			if len(fullResponse) > 0 && isValidJSON(fullResponse) {
-				break
-			}
-		}
-
+	if p.Type == queryRead {
+		data, err := h.handleReadQuery(r.Context(), &p)
 		if err != nil {
-			if err == io.EOF {
-				break
-			}
 			w.WriteHeader(http.StatusInternalServerError)
 			_ = json.NewEncoder(w).Encode(map[string]string{
-				"error": fmt.Sprintf("Error reading response: %v", err),
+				"error": fmt.Sprintf("%v", err),
 			})
 			return
 		}
 
-		// Extend deadline for each successful read
-		if err := conn.SetReadDeadline(time.Now().Add(2 * time.Second)); err != nil {
+		if err = json.NewEncoder(w).Encode(data); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			_ = json.NewEncoder(w).Encode(map[string]string{
-				"error": fmt.Sprintf("Failed to extend read deadline: %v", err),
+				"error": fmt.Sprintf("Failed to encode response: %v", err),
 			})
 			return
 		}
 	}
 
-	// Set response headers
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	if p.Type == queryWrite {
+		data, err := h.handleWriteQuery(r.Context(), &p)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			_ = json.NewEncoder(w).Encode(map[string]string{
+				"error": fmt.Sprintf("%v", err),
+			})
+			return
+		}
 
-	// Write the raw server response directly to the client
-	_, _ = w.Write(fullResponse)
+		if err = json.NewEncoder(w).Encode(data); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			_ = json.NewEncoder(w).Encode(map[string]string{
+				"error": fmt.Sprintf("Failed to encode response: %v", err),
+			})
+			return
+		}
+	}
+
+	if p.Type == queryCreate {
+		if err := h.handleCreateFamilyQuery(r.Context(), &p); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			_ = json.NewEncoder(w).Encode(map[string]string{
+				"error": fmt.Sprintf("%v", err),
+			})
+			return
+		}
+
+		if err := json.NewEncoder(w).Encode(map[string]string{
+			"message": "Families created successfully",
+		}); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			_ = json.NewEncoder(w).Encode(map[string]string{
+				"error": fmt.Sprintf("Failed to encode response: %v", err),
+			})
+			return
+		}
+	}
+
+	if p.Type == queryDelete {
+		if err := h.handleDeleteQuery(r.Context(), &p); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			_ = json.NewEncoder(w).Encode(map[string]string{
+				"error": fmt.Sprintf("%v", err),
+			})
+			return
+		}
+
+		if err := json.NewEncoder(w).Encode(map[string]string{
+			"message": "Deleted successfully",
+		}); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			_ = json.NewEncoder(w).Encode(map[string]string{
+				"error": fmt.Sprintf("Failed to encode response: %v", err),
+			})
+			return
+		}
+	}
 }
 
-// isValidJSON checks if the buffer contains a complete, valid JSON object
-func isValidJSON(data []byte) bool {
-	var js json.RawMessage
-	return json.Unmarshal(data, &js) == nil
+func (h *handler) handleDeleteQuery(ctx context.Context, p *payload) error {
+	params := &server.DeleteParams{
+		Key:    p.Key,
+		Family: p.Family,
+	}
+
+	// qualifiers are optional, so only add them if they are present
+	if len(p.Qualifiers) > 0 {
+		for _, q := range p.Qualifiers {
+			params.Qualifiers = append(params.Qualifiers, q.Name)
+		}
+	}
+
+	return h.server.Delete(ctx, params)
+}
+
+func (h *handler) handleCreateFamilyQuery(ctx context.Context, p *payload) error {
+	params := &server.CreateFamilyParams{
+		Families: p.Families,
+	}
+
+	return h.server.CreateFamilies(ctx, params)
+}
+
+func (h *handler) handleReadQuery(ctx context.Context, p *payload) (any, error) {
+
+	params := &server.ReadParams{
+		Key:        p.Key,
+		QueryType:  server.Read,
+		Family:     p.Family,
+		Qualifiers: []string{},
+	}
+
+	if p.ReadType == "prefix" {
+		params.QueryType = server.ReadPrefix
+	}
+
+	if p.ReadType == "regex" {
+		params.QueryType = server.ReadRegex
+		// Don't add wildcards if user's input already contains regex patterns
+		if strings.ContainsAny(p.Key, ".*+?^$[](){}|\\") {
+			params.Key = p.Key // Keep the regex as-is
+		} else {
+			// Only add wildcards if it's a simple string search
+			params.Key = fmt.Sprintf(".*%s.*", p.Key)
+		}
+	}
+
+	// for Read we only need to add the qualifiers
+	if len(p.Qualifiers) > 0 {
+		for _, q := range p.Qualifiers {
+			params.Qualifiers = append(params.Qualifiers, q.Name)
+		}
+	}
+
+	return h.server.Read(ctx, params)
+
+}
+
+func (h *handler) handleWriteQuery(ctx context.Context, p *payload) (any, error) {
+	params := &server.WriteParams{
+		Key:        p.Key,
+		Family:     p.Family,
+		Qualifiers: p.Qualifiers,
+	}
+
+	fmt.Println(params)
+	return h.server.Write(ctx, params)
 }

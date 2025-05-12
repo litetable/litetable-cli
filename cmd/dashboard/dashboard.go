@@ -3,6 +3,7 @@ package dashboard
 import (
 	"embed"
 	"fmt"
+	"github.com/litetable/litetable-cli/internal/server"
 	"github.com/spf13/cobra"
 	"io/fs"
 	"net/http"
@@ -38,11 +39,25 @@ func startDashboard() {
 		os.Exit(1)
 	}
 
+	litetableClient, err := server.NewClient()
+	if err != nil {
+		fmt.Printf("Failed to create LiteTable client: %v\n", err)
+		os.Exit(1)
+	}
+
+	defer func() {
+		_ = litetableClient.Close()
+	}()
+
+	ltHandler := &handler{
+		server: litetableClient,
+	}
+
 	// Serve static files
 	http.Handle("/", http.FileServer(http.FS(webFS)))
 
 	// Serve the query handler
-	http.Handle("POST /query", queryHandlerFunc())
+	http.Handle("POST /query", ltHandler)
 
 	addr := fmt.Sprintf("%s:%s", dashboardHost, dashboardPort)
 

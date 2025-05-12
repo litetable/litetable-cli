@@ -15,9 +15,9 @@ const (
 
 // TimestampedValue stores a value with its timestamp
 type TimestampedValue struct {
-	Value     []byte `json:"-"`     // Internal binary representation
-	RawValue  string `json:"value"` // Base64 encoded value from JSON
-	Timestamp int64  `json:"-"`     // Parsed timestamp
+	Value     []byte `json:"value"`     // Internal binary representation
+	RawValue  string `json:"-"`         // Base64 encoded value from JSON
+	Timestamp int64  `json:"timestamp"` // Parsed timestamp
 }
 
 // UnmarshalJSON implements custom unmarshalling for TimestampedValue
@@ -26,7 +26,10 @@ func (tv *TimestampedValue) UnmarshalJSON(data []byte) error {
 	temp := struct {
 		Value     string `json:"value"`
 		Timestamp int64  `json:"timestamp_unix"`
-	}{}
+	}{
+		Value:     tv.RawValue,
+		Timestamp: tv.Timestamp,
+	}
 
 	if err := json.Unmarshal(data, &temp); err != nil {
 		return err
@@ -42,12 +45,6 @@ func (tv *TimestampedValue) UnmarshalJSON(data []byte) error {
 		return fmt.Errorf("invalid base64 value: %w", err)
 	}
 	tv.Value = decoded
-
-	// Parse timestamp
-	// timestamp, err := time.Parse(time.RFC3339Nano, temp.Timestamp)
-	// if err != nil {
-	// 	return fmt.Errorf("invalid timestamp format: %w", err)
-	// }
 
 	return nil
 }

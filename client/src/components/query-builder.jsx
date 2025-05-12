@@ -53,52 +53,39 @@ export default function QueryBuilder() {
 
 
 	const buildQuery = () => {
-		setIsLoading(true)
-		setIsOpen("results")
+		setIsLoading(true);
+		setIsOpen("results");
 
-		let query = operation
-
-		if (columnFamily) {
-			query += ` family=${columnFamily}`
-		}
-
-		if (filterValue) {
-			query += ` ${filterType}=${filterValue}`
-		}
-
-		if (operation === "READ") {
-			qualifiers.forEach((q) => {
-				if (q.qualifier) {
-					query += ` qualifier=${q.qualifier}`
-				}
-			})
-
-			if (latest) {
-				query += ` latest=${latest}`
-			}
-		} else if (operation === "WRITE") {
-			qualifiers.forEach((q) => {
-				if (q.qualifier) {
-					const escapedValue = encodeURIComponent(q.value || "");
-					query += ` qualifier=${q.qualifier} value=${escapedValue}`;
-				}
-			})
-		}
+		const payload = {
+			type: operation,
+			readType: filterType,
+			key: filterValue || "",
+			family: columnFamily || "",
+			qualifiers: qualifiers
+				.filter((q) => q.qualifier) // Only include qualifiers with a name
+				.map((q) => {
+					// For READ and DELETE operations, send just the qualifier name
+					if (operation === "READ" || operation === "DELETE") {
+						return { name: q.qualifier }; // Use 'name' property to match server expectations
+					}
+					// For WRITE operations, include both qualifier and value
+					return {
+						name: q.qualifier,
+						value: encodeURIComponent(q.value || "")
+					};
+				}),
+		};
 
 		// Simulate loading
 		setTimeout(() => {
-			setGeneratedQuery(query)
-			setIsLoading(false)
-		}, 1000)
+			setGeneratedQuery(JSON.stringify(payload, null, 2)); // Display the payload as a JSON string
+			setIsLoading(false);
+		}, 1000);
 
-		return query
-	}
+		return payload;
+	};
 
-	const handleSubmit = async (query) => {
-		const payload = {
-			query,
-		};
-
+	const handleSubmit = async (payload) => {
 		let response;
 		try {
 			response = await fetch("/query", {
@@ -108,8 +95,8 @@ export default function QueryBuilder() {
 				},
 				body: JSON.stringify(payload),
 			});
-		} catch (error) {
-			alert("Error: " + error.message);
+		} catch (e) {
+			console.error("Error:", e);
 			return;
 		}
 
@@ -128,7 +115,7 @@ export default function QueryBuilder() {
 			}
 
 		} else {
-			alert("error");
+			console.error("Error:", response.json());
 		}
 
 		return body;
@@ -143,7 +130,11 @@ export default function QueryBuilder() {
 		}
 
 		toast("Column family created")
-		const famQuery = `CREATE family=${newest}`
+		const famQuery = {
+			type: "CREATE",
+			families: [newest],
+		}
+
 		await handleSubmit(famQuery)
 	}
 

@@ -21,7 +21,7 @@ export function unwrapAndDecodeData(data) {
             decodedCols[family][qualifier] = familyData[qualifier].map(
               (item) => ({
                 ...item,
-                value: atob(item.value), // Decode Base64
+                value: processValue(item.value),
               }),
             );
           });
@@ -29,7 +29,22 @@ export function unwrapAndDecodeData(data) {
     return decodedCols;
   };
 
-  // Multiple rows case
+  // Helper function to process values - first URL-decode, then handle potential JSON
+  const processValue = (value) => {
+    if (!value) return '';
+
+    try {
+      const binary = atob(value);
+      const utf8 = new TextDecoder('utf-8').decode(
+        new Uint8Array([...binary].map((c) => c.charCodeAt(0)))
+      );
+      return decodeURIComponent(utf8.replace(/\+/g, ' '));
+    } catch (e) {
+      return value;
+    }
+  };
+
+  // Process multiple rows
   Object.keys(data)
     .sort()
     .forEach((key) => {

@@ -22,10 +22,7 @@ var (
 		Long:  "Delete allows you to remove data from the Litetable server",
 		Run: func(cmd *cobra.Command, args []string) {
 			// Execute the delete operation
-			if err := deleteData(); err != nil {
-				fmt.Printf("Error: %v\n", err)
-				return
-			}
+			deleteData()
 		},
 	}
 )
@@ -42,7 +39,7 @@ func init() {
 	_ = DeleteCmd.MarkFlagRequired("key")
 }
 
-func deleteData() error {
+func deleteData() {
 	now := time.Now()
 
 	var qualifiers []string
@@ -65,7 +62,8 @@ func deleteData() error {
 
 	client, err := server.NewClient()
 	if err != nil {
-		return fmt.Errorf("failed to create server client: %w", err)
+		fmt.Printf("%v", err)
+		return
 	}
 
 	defer func(client *server.GrpcClient) {
@@ -73,9 +71,9 @@ func deleteData() error {
 	}(client)
 
 	if err = client.Delete(context.Background(), opts); err != nil {
-		return fmt.Errorf("failed to delete data: %w", err)
+		fmt.Printf("%v", err)
+		return
 	}
 
 	fmt.Println("Delete successful in", time.Since(now))
-	return nil
 }

@@ -2,7 +2,6 @@ package operations
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/litetable/litetable-cli/internal/server"
@@ -42,10 +41,7 @@ var (
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := readData(); err != nil {
-				fmt.Printf("Error: %v\n", err)
-				return
-			}
+			readData()
 		},
 	}
 )
@@ -65,7 +61,7 @@ func init() {
 	_ = ReadCmd.MarkFlagRequired("family")
 }
 
-func readData() error {
+func readData() {
 	now := time.Now()
 
 	// Build the READ command based on which selector is provided
@@ -91,7 +87,8 @@ func readData() error {
 
 	client, err := server.NewClient()
 	if err != nil {
-		return fmt.Errorf("failed to create server client: %w", err)
+		fmt.Printf("%v", err)
+		return
 	}
 
 	defer func(client *server.GrpcClient) {
@@ -109,28 +106,22 @@ func readData() error {
 	if err != nil {
 		if errors.Is(err, server.ErrRowNotFound) {
 			fmt.Println("row not found")
-			return nil
+			return
 		}
-		return fmt.Errorf("failed to read data: %w", err)
+		fmt.Printf("failed to read data: %w", err)
+		return
 	}
 
 	first := true
 	// Print the rows
-	for key, row := range data {
+	for _, row := range data {
 		if !first {
 			fmt.Println("--------------------")
 			fmt.Println()
 		}
 		first = false
-		fmt.Printf("Key: %s\n%s\n", key, row.PrettyPrint())
+		fmt.Printf("%s\n", row.PrettyPrint())
 	}
 	fmt.Printf("Row results: %d\n", len(data))
 	fmt.Printf("Query duration: %s\n", time.Since(now))
-	return nil
-}
-
-// IsValidJSON checks if the buffer contains a complete, valid JSON object
-func IsValidJSON(data []byte) bool {
-	var js json.RawMessage
-	return json.Unmarshal(data, &js) == nil
 }

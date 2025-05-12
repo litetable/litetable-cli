@@ -103,3 +103,20 @@ func (g *GrpcClient) Delete(ctx context.Context, p *DeleteParams) error {
 
 	return nil
 }
+
+type CreateFamilyParams struct {
+	Families []string
+}
+
+func (g *GrpcClient) CreateFamilies(ctx context.Context, p *CreateFamilyParams) error {
+	params := &proto.CreateFamilyRequest{
+		Family: p.Families,
+	}
+	
+	_, err := g.client.CreateFamily(ctx, params)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

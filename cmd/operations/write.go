@@ -43,10 +43,7 @@ var (
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := writeData(); err != nil {
-				fmt.Printf("Error: %v\n", err)
-				return
-			}
+			writeData()
 		},
 	}
 )
@@ -63,7 +60,8 @@ func init() {
 		"Time to live in seconds (0 means no expiration)")
 }
 
-func writeData() error {
+func writeData() {
+	start := time.Now()
 	var quals []server.Qualifier
 	// Create the WRITE command with all the qualifier/value pairs
 	for i := 0; i < len(writeQuals); i++ {
@@ -75,14 +73,15 @@ func writeData() error {
 		})
 	}
 
-	now := time.Now()
-
 	client, err := server.NewClient()
 	if err != nil {
-		return fmt.Errorf("failed to create server client: %w", err)
+		fmt.Printf("%v", err)
+		return
 	}
 
-	defer client.Close()
+	defer func(client *server.GrpcClient) {
+		_ = client.Close()
+	}(client)
 
 	// TODO: fix the ttl stuff after server
 	opts := server.WriteParams{
@@ -92,11 +91,12 @@ func writeData() error {
 	}
 	data, err := client.Write(context.Background(), &opts)
 	if err != nil {
-		return fmt.Errorf("failed to write data: %w", err)
+		fmt.Printf("%v\n", err)
+		return
 	}
 
 	first := true
-	for key, row := range data {
+	for _, row := range data {
 		if !first {
 			fmt.Println("--------------------")
 			fmt.Println()
@@ -104,10 +104,8 @@ func writeData() error {
 			fmt.Println()
 		}
 		first = false
-		fmt.Printf("Key: %s\n%s\n", key, row.PrettyPrint())
-	}
-	fmt.Printf("Row results: %d\n", len(data))
-	fmt.Printf("Query duration: %s\n", time.Since(now))
+		fmt.Printf("%s\n", row.PrettyPrint())
 
-	return nil
+	}
+	fmt.Printf("Query duration: %s\n", time.Since(start))
 }

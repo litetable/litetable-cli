@@ -1,11 +1,10 @@
 package operations
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
-	"github.com/litetable/litetable-cli/cmd/service"
+	"github.com/litetable/litetable-cli/internal/server"
 	"github.com/spf13/cobra"
-	"net/url"
 	"strings"
 	"time"
 )
@@ -15,14 +14,12 @@ var (
 	families string
 
 	CreateCmd = &cobra.Command{
-		Use:   "create",
-		Short: "Create configuration in the Litetable server",
-		Long:  "Create configuration elements such as column families in the Litetable server",
+		Use:     "create",
+		Short:   "Create configuration in the Litetable server",
+		Long:    "Create configuration elements such as column families in the Litetable server",
+		Example: "litetable create -f 'family1, family2, family3'",
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := createConfig(); err != nil {
-				fmt.Printf("Error: %v\n", err)
-				return
-			}
+			createFamilies()
 		},
 	}
 )
@@ -33,56 +30,43 @@ func init() {
 	_ = CreateCmd.MarkFlagRequired("family")
 }
 
-func createConfig() error {
-	conn, err := service.Dial()
-	if err != nil {
-		return fmt.Errorf("failed to dial server: %w", err)
-	}
-	defer conn.Close()
+func createFamilies() {
+	start := time.Now()
 
-	now := time.Now()
+	var familyParams server.CreateFamilyParams
 
-	// Parse comma-separated families
+	// Parse comma-separated families and properly trim whitespace
 	familyList := strings.Split(families, ",")
-	for i, family := range familyList {
-		familyList[i] = strings.TrimSpace(family)
+	for _, family := range familyList {
+		trimmed := strings.TrimSpace(family)
+		// Only add non-empty family names
+		if trimmed != "" {
+			familyParams.Families = append(familyParams.Families, trimmed)
+		}
 	}
 
-	// Encode family names to handle special characters
-	encodedFamilies := make([]string, len(familyList))
-	for i, family := range familyList {
-		encodedFamilies[i] = url.QueryEscape(family)
+	// Check if we have any families to create
+	if len(familyParams.Families) == 0 {
+		fmt.Printf("no valid family names provided")
+		return
 	}
 
-	// Create the CREATE command with all families
-	cmd := fmt.Sprintf("CREATE family=%s", strings.Join(encodedFamilies, ","))
-
-	// Send the command
-	if _, err = conn.Write([]byte(cmd)); err != nil {
-		return fmt.Errorf("failed to send create command: %w", err)
-	}
-
-	// Read response
-	buffer := make([]byte, 4096)
-	n, err := conn.Read(buffer)
+	// Create a new gRPC client
+	client, err := server.NewClient()
 	if err != nil {
-		return fmt.Errorf("failed to read response: %w", err)
+		fmt.Printf("%v", err)
+		return
 	}
 
-	// Try to parse as JSON, but handle non-JSON responses as well
-	var jsonResponse map[string]interface{}
-	if err := json.Unmarshal(buffer[:n], &jsonResponse); err != nil {
-		// Not JSON, just print the raw response
-		fmt.Println(string(buffer[:n]))
-	} else {
-		// JSON response
-		prettyJSON, _ := json.MarshalIndent(jsonResponse, "", "  ")
-		fmt.Println(string(prettyJSON))
+	defer func() {
+		_ = client.Close()
+	}()
+
+	// Create families on the server
+	if err = client.CreateFamilies(context.Background(), &familyParams); err != nil {
+		fmt.Printf("%w", err)
+		return
 	}
 
-	elapsed := time.Since(now)
-	elapsedMs := float64(elapsed.Nanoseconds()) / 1_000_000.0
-	fmt.Printf("Roundtrip in %.2fms\n", elapsedMs)
-
-	return nil
+	fmt.Printf("Created famililes in %s\n", time.Since(start))
 }

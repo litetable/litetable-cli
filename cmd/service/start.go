@@ -30,6 +30,15 @@ var StartCommand = &cobra.Command{
 func startLiteTable() error {
 	fmt.Println("🚀 Starting LiteTable server...")
 
+	// Check if the server is already running
+	isRunning, pid, err := checkProcessRunning()
+	if err != nil {
+		fmt.Printf("⚠️  Warning: Could not determine if server is running: %v\n", err)
+	} else if isRunning {
+		fmt.Println("✅  LiteTable server is already running.")
+		return nil
+	}
+
 	// Get LiteTable directory
 	liteTableDir, err := dir.GetLitetableDir()
 	if err != nil {
@@ -109,7 +118,7 @@ func startLiteTable() error {
 		return fmt.Errorf("failed to start server: %w", err)
 	}
 
-	pid := serverCmd.Process.Pid
+	pid = serverCmd.Process.Pid
 	pidFile := filepath.Join(liteTableDir, "litetable.pid")
 	if err := os.WriteFile(pidFile, []byte(strconv.Itoa(pid)), 0644); err != nil {
 		return fmt.Errorf("failed to write PID file: %w", err)
@@ -117,4 +126,42 @@ func startLiteTable() error {
 
 	fmt.Printf("✅  LiteTable server started with PID: %d\n", pid)
 	return nil
+}
+
+func checkProcessRunning() (bool, int, error) {
+	// Get LiteTable directory
+	liteTableDir, err := dir.GetLitetableDir()
+	if err != nil {
+		return false, 0, fmt.Errorf("failed to get LiteTable directory: %w", err)
+	}
+
+	// Check if PID file exists
+	pidFile := filepath.Join(liteTableDir, "litetable.pid")
+	pidBytes, err := os.ReadFile(pidFile)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return false, 0, nil // PID file doesn't exist, so server isn't running
+		}
+		return false, 0, fmt.Errorf("failed to read PID file: %w", err)
+	}
+
+	// Parse PID
+	pid, err := strconv.Atoi(strings.TrimSpace(string(pidBytes)))
+	if err != nil {
+		return false, 0, fmt.Errorf("failed to parse PID: %w", err)
+	}
+
+	// Check if process is running
+	process, err := os.FindProcess(pid)
+	if err != nil {
+		return false, pid, fmt.Errorf("failed to find process: %w", err)
+	}
+
+	// On Unix systems, FindProcess always succeeds, so we need to send signal 0 to check
+	// if the process exists. On Windows, FindProcess only succeeds if the process exists.
+	if err := process.Signal(syscall.Signal(0)); err != nil {
+		return false, pid, nil // Process doesn't exist
+	}
+
+	return true, pid, nil // Process exists
 }

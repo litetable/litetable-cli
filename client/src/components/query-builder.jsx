@@ -250,23 +250,24 @@ export default function QueryBuilder() {
           </AccordionTrigger>
           <AccordionContent className="px-6 pb-6 border-t">
             {isLoading ? (
-              <div className="flex justify-center items-center py-8">
+              <div className="flex justify-center items-center py-4">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 <span className="ml-2">Processing query...</span>
               </div>
-            ) : generatedQuery ? (
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Generated Query:</h3>
-                  <div className="p-3 bg-muted rounded-md overflow-x-auto">
-                    <code className="text-sm">{generatedQuery}</code>
-                  </div>
-                </div>
-
+            )
+              : generatedQuery ? (
+              <div className="mt-4">
+                {/*<div>*/}
+                {/*  <h3 className="text-sm font-medium mb-1">Generated Query:</h3>*/}
+                {/*  <div className="p-3 bg-muted rounded-md overflow-x-auto">*/}
+                {/*    <code className="text-sm">{generatedQuery}</code>*/}
+                {/*  </div>*/}
+                {/*</div>*/}
                 {results && <ResultsTable data={Object.values(results)} />}
               </div>
-            ) : (
-              <div className="py-4 text-center text-muted-foreground">
+            )
+                : (
+              <div className="py-2 text-center text-muted-foreground">
                 Generate a query to see results
               </div>
             )}

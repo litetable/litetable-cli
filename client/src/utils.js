@@ -57,36 +57,87 @@ export function unwrapAndDecodeData(data) {
   return result;
 }
 
+// export function chunkTextToLiteTableRows({ name, text }, options = {}) {
+//   const {
+//     chunkSize = 10000,         // Number of characters per chunk
+//     family = "chunks",
+//     qualifier = "text",
+//     prefix = "pdf",
+//   } = options;
+//
+//   // Sanitize and slugify filename
+//   const fileBase = name.replace(/\.[^/.]+$/, "")   // remove extension
+//     .toLowerCase()
+//     .replace(/[^a-z0-9]+/g, "-")                   // replace non-alphanumerics
+//     .replace(/(^-|-$)/g, "")                       // trim hyphens
+//
+//   const rowPrefix = `${prefix}:${fileBase}`
+//
+//   // Split text into chunks
+//   const chunks = []
+//   for (let i = 0; i < text.length; i += chunkSize) {
+//     const chunkText = text.slice(i, i + chunkSize).trim()
+//     if (!chunkText) continue
+//
+//     const next = {
+//       rowKey: `${rowPrefix}:${chunks.length}`,  // maintains order
+//       family,
+//       qualifiers: {
+//         [qualifier]: chunkText
+//       }
+//     }
+//     chunks.push(next)
+//   }
+//
+//   return chunks
+// }
+
 export function chunkTextToLiteTableRows({ name, text }, options = {}) {
   const {
-    chunkSize = 500,         // Number of characters per chunk
-    family = "chunks",
-    qualifier = "text",
-    prefix = "pdf",
+    chunkKB = 256,              // Max size of each chunk in kilobytes
+    family = "chunks",         // Column family
+    qualifier = "contents",        // Qualifier name for chunked text
+    prefix = "pdf",            // Row key prefix
   } = options;
 
-  // Sanitize and slugify filename
+  const encoder = new TextEncoder();
+  const maxBytes = chunkKB * 1024;
+
+  const chunks = [];
+  let currentChunk = '';
+  let currentSize = 0;
+
   const fileBase = name.replace(/\.[^/.]+$/, "")   // remove extension
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")                   // replace non-alphanumerics
-    .replace(/(^-|-$)/g, "")                       // trim hyphens
+    .replace(/(^-|-$)/g, "")
 
-  const rowPrefix = `${prefix}:${fileBase}`
+  for (const char of text) {
+    const charBytes = encoder.encode(char);
+    if (currentSize + charBytes.length > maxBytes) {
+      chunks.push(currentChunk);
+      currentChunk = '';
+      currentSize = 0;
+    }
 
-  // Split text into chunks
-  const chunks = []
-  for (let i = 0; i < text.length; i += chunkSize) {
-    const chunkText = text.slice(i, i + chunkSize).trim()
-    if (!chunkText) continue
-
-    chunks.push({
-      rowKey: `${rowPrefix}:${chunks.length}`,  // maintains order
-      family,
-      qualifiers: {
-        [qualifier]: chunkText
-      }
-    })
+    currentChunk += char;
+    currentSize += charBytes.length;
   }
 
-  return chunks
+  // Push the final chunk
+  if (currentChunk) {
+    chunks.push(currentChunk);
+  }
+
+  const bunch = chunks.map((chunk, index) => ({
+    rowKey: `${prefix}:${fileBase}:${index}`,
+    family,
+    qualifiers: {
+      [qualifier]: chunk,
+    },
+  }));
+
+  console.log(bunch)
+  // Map chunks to LiteTable row format
+  return bunch;
 }

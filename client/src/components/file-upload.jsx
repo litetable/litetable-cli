@@ -18,6 +18,7 @@ export function FileUploadInput({
   maxSize = maxKiloBytes,
   file,
   setFile,
+	cb = null,
 }) {
   const [dragActive, setDragActive] = useState(false);
   const [validationMessage, setValidationMessage] = useState("");
@@ -117,6 +118,9 @@ export function FileUploadInput({
     setFile(null);
     setFile(null);
     setValidationMessage("");
+		if (cb) {
+			cb();
+		}
   }, []);
 
   return (
@@ -222,10 +226,14 @@ export default function FileUploadForm({ fileCB = null }) {
 		setUploaded(false);
 	};
 
-
+	const reset = () => {
+			setFile(null);
+			setUploaded(false);
+			setIsProcessed(false);
+		}
 	return (
 		<>
-			<FileUploadInput file={file} setFile={setFile} />
+			<FileUploadInput file={file} setFile={setFile} cb={reset} />
 			<Button className="w-full mt-4" disabled={!file || isProcessed} onClick={handleSubmit}>
 				{/* eslint-disable-next-line no-nested-ternary */}
 				{isProcessed ? (

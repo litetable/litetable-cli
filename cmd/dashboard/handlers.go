@@ -2,7 +2,6 @@ package dashboard
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/litetable/litetable-cli/internal/dir"
 	"net/http"
 )
@@ -17,7 +16,6 @@ func (h *handler) getFamilies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("Families:", families)
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(families); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

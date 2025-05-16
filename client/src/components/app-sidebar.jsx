@@ -1,5 +1,5 @@
-import { Calendar, Home, Inbox, Hammer, Settings } from "lucide-react";
-
+import { Home, Inbox, Hammer, Upload } from "lucide-react";
+import { NavLink } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -15,13 +15,18 @@ import {
 const items = [
   {
     title: "Home",
-    url: "#",
+    url: "/",
     icon: Home,
   },
   {
     title: "Query Builder",
-    url: "#",
+    url: "/query",
     icon: Hammer,
+  },
+  {
+    title: "Upload",
+    url: "/upload",
+    icon: Upload,
   },
 ];
 
@@ -36,10 +41,10 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
+                    <NavLink to={item.url} className="flex items-center">
+                      <item.icon className="mr-2" />
                       <span>{item.title}</span>
-                    </a>
+                    </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

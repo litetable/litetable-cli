@@ -31,14 +31,14 @@ export function unwrapAndDecodeData(data) {
 
   // Helper function to process values - first URL-decode, then handle potential JSON
   const processValue = (value) => {
-    if (!value) return '';
+    if (!value) return "";
 
     try {
       const binary = atob(value);
-      const utf8 = new TextDecoder('utf-8').decode(
-        new Uint8Array([...binary].map((c) => c.charCodeAt(0)))
+      const utf8 = new TextDecoder("utf-8").decode(
+        new Uint8Array([...binary].map((c) => c.charCodeAt(0))),
       );
-      return decodeURIComponent(utf8.replace(/\+/g, ' '));
+      return decodeURIComponent(utf8.replace(/\+/g, " "));
     } catch (e) {
       return value;
     }

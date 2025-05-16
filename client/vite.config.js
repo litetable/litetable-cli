@@ -2,6 +2,11 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import tailwindcss from "@tailwindcss/vite";
+import { fileURLToPath } from 'url';
+
+// Create __dirname equivalent for ESM
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
@@ -50,5 +55,11 @@ export default defineConfig({
         target: "http://127.0.0.1:7654",
       },
     },
+    fs: {
+      allow: [
+        path.resolve(__dirname, "./"),
+        path.resolve(__dirname, "../node_modules/pdfjs-dist"),
+      ]
+    }
   },
 });

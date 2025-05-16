@@ -13,7 +13,10 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { useQueryApi } from "@/hooks/use-query-api";
+import FileUploadForm from "@/components/file-upload";
+import { chunkTextToLiteTableRows } from "@/utils";
 import { toast } from "sonner";
+
 
 export default function JsonUpload() {
   const [jsonContent, setJsonContent] = useState("");
@@ -127,10 +130,40 @@ export default function JsonUpload() {
     }
   };
 
+  async function submitFileUpload(file) {
+    const chunks = chunkTextToLiteTableRows(file, {
+      chunkSize: 750,
+      family: "documents",
+      qualifier: "text",
+      prefix: "documents",
+    });
+
+    for (const chunk of chunks) {
+      const payload = {
+        type: "WRITE",
+        key: chunk.rowKey,
+        family: chunk.family,
+        qualifiers: Object.entries(chunk.qualifiers).map(([name, value]) => ({
+          name,
+          value: encodeURIComponent(value),
+        })),
+      };
+
+      const result = await handleSubmit(payload);
+      if (!result?.success) {
+        console.error("Failed to write chunk:", chunk.rowKey);
+      }
+    }
+
+    console.log("✅ All chunks submitted!");
+  }
+
+
   return (
     <>
       <h1 className="text-3xl font-bold text-center mb-6">Upload</h1>
       <Card className="w-full">
+        <FileUploadForm fileCB={submitFileUpload} />
         <CardHeader>
           <CardTitle>Upload JSON Data</CardTitle>
           <CardDescription>

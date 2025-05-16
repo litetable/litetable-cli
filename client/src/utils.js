@@ -56,3 +56,37 @@ export function unwrapAndDecodeData(data) {
 
   return result;
 }
+
+export function chunkTextToLiteTableRows({ name, text }, options = {}) {
+  const {
+    chunkSize = 500,         // Number of characters per chunk
+    family = "chunks",
+    qualifier = "text",
+    prefix = "pdf",
+  } = options;
+
+  // Sanitize and slugify filename
+  const fileBase = name.replace(/\.[^/.]+$/, "")   // remove extension
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")                   // replace non-alphanumerics
+    .replace(/(^-|-$)/g, "")                       // trim hyphens
+
+  const rowPrefix = `${prefix}:${fileBase}`
+
+  // Split text into chunks
+  const chunks = []
+  for (let i = 0; i < text.length; i += chunkSize) {
+    const chunkText = text.slice(i, i + chunkSize).trim()
+    if (!chunkText) continue
+
+    chunks.push({
+      rowKey: `${rowPrefix}:${chunks.length}`,  // maintains order
+      family,
+      qualifiers: {
+        [qualifier]: chunkText
+      }
+    })
+  }
+
+  return chunks
+}

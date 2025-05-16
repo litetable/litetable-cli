@@ -38,7 +38,8 @@ type handler struct {
 	server litetable
 }
 
-func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+// query handles LiteTable query requests
+func (h *handler) query(w http.ResponseWriter, r *http.Request) {
 	// Set response headers
 	w.Header().Set("Content-Type", "application/json")
 	// Decode the JSON payload

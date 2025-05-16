@@ -56,8 +56,9 @@ func startDashboard() {
 	// Serve static files
 	http.Handle("/", http.FileServer(http.FS(webFS)))
 
-	// Serve the query handler
-	http.Handle("POST /query", ltHandler)
+	// Serve handlers
+	http.Handle("POST /query", http.HandlerFunc(ltHandler.query))
+	http.Handle("GET /families", http.HandlerFunc(ltHandler.getFamilies))
 
 	addr := fmt.Sprintf("%s:%s", dashboardHost, dashboardPort)
 

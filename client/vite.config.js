@@ -46,6 +46,9 @@ export default defineConfig({
       "/query": {
         target: "http://127.0.0.1:7654",
       },
+      "/families": {
+        target: "http://127.0.0.1:7654",
+      },
     },
   },
 });

@@ -254,8 +254,7 @@ export default function QueryBuilder() {
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 <span className="ml-2">Processing query...</span>
               </div>
-            )
-              : generatedQuery ? (
+            ) : generatedQuery ? (
               <div className="mt-4">
                 {/*<div>*/}
                 {/*  <h3 className="text-sm font-medium mb-1">Generated Query:</h3>*/}
@@ -265,8 +264,7 @@ export default function QueryBuilder() {
                 {/*</div>*/}
                 {results && <ResultsTable data={Object.values(results)} />}
               </div>
-            )
-                : (
+            ) : (
               <div className="py-2 text-center text-muted-foreground">
                 Generate a query to see results
               </div>

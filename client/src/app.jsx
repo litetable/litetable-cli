@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "./layout";
 import QueryBuilder from "@/components/query-builder";
 import JsonUpload from "@/components/json-upload";
+import ChatStreamUI from "@/components/research-box";
 
 function Home() {
   return (
@@ -9,6 +10,7 @@ function Home() {
       <h1 className="text-3xl font-bold text-center mb-6">
         Welcome to LiteTable!
       </h1>
+      <ChatStreamUI />
     </div>
   );
 }

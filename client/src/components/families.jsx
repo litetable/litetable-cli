@@ -53,8 +53,7 @@ export default function FamilySelector({ columnFamily, setColumnFamily }) {
         setColumnFamily(data[0]);
       }
     } catch (err) {
-      setError(err.message);
-      toast.error("Failed to load column families");
+      setFamilies([])
     } finally {
       setIsLoading(false);
     }

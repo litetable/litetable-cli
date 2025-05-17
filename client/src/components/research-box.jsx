@@ -1,11 +1,23 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Card } from "@/components/ui/card.jsx"
-import { Input } from "@/components/ui/input.jsx"
-import { Button } from "@/components/ui/button.jsx"
-import { ScrollArea } from "@/components/ui/scroll-area.jsx"
+import { Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { Send, Sparkle, XCircle, Search, BookOpen, Clock, ArrowUpRight } from "lucide-react"
+
+// Define the bounce animation
+const bounceStyle = `
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+  `
 
 export default function QuestionAnswerUI() {
 	const [question, setQuestion] = useState("")
@@ -143,7 +155,8 @@ export default function QuestionAnswerUI() {
 	}
 
 	return (
-		<div className="max-w-5xl mx-auto py-8 px-4">
+		<div className="max-w-4xl mx-auto py-8 px-4">
+			<style dangerouslySetInnerHTML={{ __html: bounceStyle }} />
 			<Card className="border border-gray-200 rounded-xl shadow-sm overflow-hidden">
 				<div className="border-b border-gray-100 p-4 flex justify-between items-center">
 					<div className="flex items-center gap-2">
@@ -185,37 +198,47 @@ export default function QuestionAnswerUI() {
 								<div className="ml-10 pl-4 border-l-2 border-gray-200">
 									<div className="bg-gray-100 rounded-xl p-4 shadow-sm">
 										{item.status === "loading" && (
-											<div className="flex items-center gap-2 text-gray-500">
-												<div className="flex space-x-1">
-													<div
-														className="w-2 h-2 rounded-full bg-gray-300"
+											<div className="flex flex-col items-center py-6 text-gray-500">
+												<div className="flex items-center gap-2 animate-pulse">
+													<div className="flex space-x-1">
+														<div
+															className="w-2 h-2 rounded-full bg-gray-400"
+															style={{
+																animationName: "bounce",
+																animationDuration: "1s",
+																animationIterationCount: "infinite",
+																animationDelay: "0ms",
+															}}
+														></div>
+														<div
+															className="w-2 h-2 rounded-full bg-gray-400"
+															style={{
+																animationName: "bounce",
+																animationDuration: "1s",
+																animationIterationCount: "infinite",
+																animationDelay: "150ms",
+															}}
+														></div>
+														<div
+															className="w-2 h-2 rounded-full bg-gray-400"
+															style={{
+																animationName: "bounce",
+																animationDuration: "1s",
+																animationIterationCount: "infinite",
+																animationDelay: "300ms",
+															}}
+														></div>
+													</div>
+													<span
+														className="text-sm font-medium relative"
 														style={{
-															animationName: "bounce",
-															animationDuration: "1s",
-															animationIterationCount: "infinite",
-															animationDelay: "0ms",
+															animation: "bounce 1.2s ease-in-out infinite",
 														}}
-													></div>
-													<div
-														className="w-2 h-2 rounded-full bg-gray-300"
-														style={{
-															animationName: "bounce",
-															animationDuration: "1s",
-															animationIterationCount: "infinite",
-															animationDelay: "150ms",
-														}}
-													></div>
-													<div
-														className="w-2 h-2 rounded-full bg-gray-300"
-														style={{
-															animationName: "bounce",
-															animationDuration: "1s",
-															animationIterationCount: "infinite",
-															animationDelay: "300ms",
-														}}
-													></div>
+													>
+                            Researching answer...
+                          </span>
 												</div>
-												<span className="text-sm">Researching answer...</span>
+												<div className="mt-3 text-xs text-gray-400">Searching through available context</div>
 											</div>
 										)}
 

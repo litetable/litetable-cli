@@ -45,8 +45,8 @@ export default function ChatStreamUI() {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					question,
-					top_k: 3,
-					threshold: 0.40,
+					top_k: 10,
+					threshold: 0.20,
 					llm: { type: "ollama", model: "llama3.2:latest" },
 				}),
 				signal: controllerRef.current.signal,

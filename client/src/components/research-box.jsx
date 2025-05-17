@@ -116,7 +116,7 @@ export default function QuestionAnswerUI() {
 					),
 				)
 			} else {
-				// Handle abort - mark as cancelled
+				// Handle abort - mark as canceled
 				setAnswers((prev) =>
 					prev.map((a) =>
 						a.id === newAnswerId ? { ...a, status: "cancelled", response: a.response || "Request cancelled." } : a,

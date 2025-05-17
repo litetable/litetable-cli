@@ -4,6 +4,7 @@ import { Upload, X, Check, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { groupItemsByLine} from '@/utils.js';
 
 const supportedFileTypes = ["application/pdf"];
 const maxKiloBytes = 10240;
@@ -205,8 +206,7 @@ export default function FileUploadForm({ fileCB = null }) {
 			);
 
 			const textItems = allTextItems.flatMap((textContent) => textContent.items);
-			const contents = textItems.map((item) => item.str);
-			const text = contents.join("");
+			const text = groupItemsByLine(textItems).join("\n");
 
 			const updatedFile = { ...file, text };
 			setFile(updatedFile);

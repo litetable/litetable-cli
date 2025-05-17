@@ -54,6 +54,9 @@ export default defineConfig({
       "/families": {
         target: "http://127.0.0.1:7654",
       },
+      "/completions": {
+        target: "http://127.0.0.1:5150",
+      },
     },
     fs: {
       allow: [

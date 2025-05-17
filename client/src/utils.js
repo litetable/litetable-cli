@@ -106,3 +106,20 @@ export function chunkTextToLiteTableRows({ name, text }, options = {}) {
   // Map chunks to LiteTable row format
   return bunch;
 }
+
+export function groupItemsByLine(items) {
+  const lines = new Map();
+
+  for (const item of items) {
+    const y = Math.round(item.transform[5]); // Y position
+    if (!lines.has(y)) {
+      lines.set(y, []);
+    }
+    lines.get(y).push(item.str);
+  }
+
+  // Sort lines by Y descending (top to bottom on page)
+  return [...lines.entries()]
+    .sort((a, b) => b[0] - a[0])
+    .map(([_, words]) => words.join(" "));
+}
